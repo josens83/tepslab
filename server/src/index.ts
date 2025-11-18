@@ -5,6 +5,7 @@ import { connectDatabase } from './config/database';
 import authRoutes from './routes/authRoutes';
 import courseRoutes from './routes/courseRoutes';
 import enrollmentRoutes from './routes/enrollmentRoutes';
+import paymentRoutes from './routes/paymentRoutes';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 // Load environment variables
@@ -34,6 +35,7 @@ app.get('/health', (_req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Error handling
 app.use(notFound);
@@ -73,6 +75,13 @@ const startServer = async () => {
       console.log('   POST /api/enrollments');
       console.log('   GET  /api/enrollments');
       console.log('   PUT  /api/enrollments/:id/progress');
+      console.log('');
+      console.log('   Payments:');
+      console.log('   POST /api/payments/ready');
+      console.log('   POST /api/payments/confirm');
+      console.log('   GET  /api/payments');
+      console.log('   GET  /api/payments/:id');
+      console.log('   POST /api/payments/:id/cancel');
       console.log('');
     });
   } catch (error) {

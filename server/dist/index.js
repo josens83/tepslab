@@ -10,6 +10,7 @@ const database_1 = require("./config/database");
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const courseRoutes_1 = __importDefault(require("./routes/courseRoutes"));
 const enrollmentRoutes_1 = __importDefault(require("./routes/enrollmentRoutes"));
+const paymentRoutes_1 = __importDefault(require("./routes/paymentRoutes"));
 const errorHandler_1 = require("./middleware/errorHandler");
 // Load environment variables
 dotenv_1.default.config();
@@ -34,6 +35,7 @@ app.get('/health', (_req, res) => {
 app.use('/api/auth', authRoutes_1.default);
 app.use('/api/courses', courseRoutes_1.default);
 app.use('/api/enrollments', enrollmentRoutes_1.default);
+app.use('/api/payments', paymentRoutes_1.default);
 // Error handling
 app.use(errorHandler_1.notFound);
 app.use(errorHandler_1.errorHandler);
@@ -70,6 +72,13 @@ const startServer = async () => {
             console.log('   POST /api/enrollments');
             console.log('   GET  /api/enrollments');
             console.log('   PUT  /api/enrollments/:id/progress');
+            console.log('');
+            console.log('   Payments:');
+            console.log('   POST /api/payments/ready');
+            console.log('   POST /api/payments/confirm');
+            console.log('   GET  /api/payments');
+            console.log('   GET  /api/payments/:id');
+            console.log('   POST /api/payments/:id/cancel');
             console.log('');
         });
     }
