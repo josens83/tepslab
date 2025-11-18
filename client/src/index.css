@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  body {
+    @apply m-0 font-sans antialiased;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-8 py-3 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 active:scale-95;
+  }
+
+  .btn-yellow {
+    @apply bg-brand-yellow text-black hover:shadow-xl;
+  }
+
+  .btn-purple {
+    @apply bg-brand-purple text-white hover:shadow-xl;
+  }
+
+  .btn-pink {
+    @apply bg-brand-pink text-white hover:shadow-xl;
+  }
+
+  .btn-cyan {
+    @apply bg-brand-cyan text-white hover:shadow-xl;
+  }
+
+  .btn-green {
+    @apply bg-brand-green text-white hover:shadow-xl;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1;
+  }
+}
