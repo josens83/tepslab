@@ -17,6 +17,7 @@ import {
 import { useToast } from './hooks/useToast';
 import { IoMail, IoSearch } from 'react-icons/io5';
 import { LayoutDemo } from './pages/LayoutDemo';
+import { LandingPage } from './pages/LandingPage';
 
 // Component Library Demo Page
 function ComponentDemo() {
@@ -37,7 +38,12 @@ function ComponentDemo() {
           <p className="text-gray-600">
             프리미엄 학습 플랫폼의 공통 컴포넌트 데모
           </p>
-          <div className="mt-6">
+          <div className="mt-6 flex gap-4">
+            <Link to="/">
+              <Button variant="yellow" size="lg">
+                랜딩 페이지 보기
+              </Button>
+            </Link>
             <Link to="/layout">
               <Button variant="purple" size="lg">
                 레이아웃 데모 보기
@@ -267,7 +273,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<ComponentDemo />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/components" element={<ComponentDemo />} />
         <Route path="/layout/*" element={<LayoutDemo />} />
       </Routes>
     </BrowserRouter>
