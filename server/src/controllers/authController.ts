@@ -195,7 +195,7 @@ export const getCurrentUser = async (
  * @desc    Redirect to Kakao OAuth
  * @access  Public
  */
-export const kakaoAuth = (req: Request, res: Response): void => {
+export const kakaoAuth = (_req: Request, res: Response): void => {
   const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.KAKAO_CLIENT_ID}&redirect_uri=${process.env.KAKAO_REDIRECT_URI}&response_type=code`;
   res.redirect(kakaoAuthUrl);
 };
@@ -297,7 +297,7 @@ export const kakaoCallback = async (
  * @desc    Redirect to Naver OAuth
  * @access  Public
  */
-export const naverAuth = (req: Request, res: Response): void => {
+export const naverAuth = (_req: Request, res: Response): void => {
   const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${process.env.NAVER_CLIENT_ID}&redirect_uri=${process.env.NAVER_REDIRECT_URI}&state=random_state`;
   res.redirect(naverAuthUrl);
 };
