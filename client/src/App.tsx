@@ -1,35 +1,289 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Input,
+  Textarea,
+  Modal,
+  ModalFooter,
+  LoadingSpinner,
+  ToastContainer,
+  Logo,
+} from './components/common';
+import { useToast } from './hooks/useToast';
+import { IoMail, IoSearch } from 'react-icons/io5';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { toasts, removeToast, success, error, info, warning } = useToast();
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <BrowserRouter>
+      <div className="min-h-screen bg-gray-50 p-8">
+        <ToastContainer toasts={toasts} onClose={removeToast} />
+
+        <div className="max-w-7xl mx-auto space-y-12">
+          {/* Header */}
+          <header className="bg-white rounded-2xl shadow-lg p-8">
+            <Logo size="lg" />
+            <h1 className="text-4xl font-bold text-gray-900 mt-6 mb-2">
+              컴포넌트 라이브러리
+            </h1>
+            <p className="text-gray-600">
+              프리미엄 학습 플랫폼의 공통 컴포넌트 데모
+            </p>
+          </header>
+
+          {/* Logo Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Logo 컴포넌트</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="flex items-center gap-8">
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Small</p>
+                    <Logo size="sm" clickable={false} />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Medium</p>
+                    <Logo size="md" clickable={false} />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Large</p>
+                    <Logo size="lg" clickable={false} />
+                  </div>
+                </div>
+                <div className="bg-gray-900 p-6 rounded-lg">
+                  <p className="text-sm text-white mb-2">White Variant</p>
+                  <Logo variant="white" clickable={false} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Button Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Button 컴포넌트</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Color Variants */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                    Color Variants
+                  </h3>
+                  <div className="flex flex-wrap gap-3">
+                    <Button variant="yellow">Yellow Button</Button>
+                    <Button variant="purple">Purple Button</Button>
+                    <Button variant="pink">Pink Button</Button>
+                    <Button variant="cyan">Cyan Button</Button>
+                    <Button variant="green">Green Button</Button>
+                    <Button variant="outline">Outline Button</Button>
+                    <Button variant="ghost">Ghost Button</Button>
+                  </div>
+                </div>
+
+                {/* Sizes */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                    Sizes
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button size="sm">Small</Button>
+                    <Button size="md">Medium</Button>
+                    <Button size="lg">Large</Button>
+                  </div>
+                </div>
+
+                {/* States */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                    States
+                  </h3>
+                  <div className="flex flex-wrap gap-3">
+                    <Button loading>
+                      Loading Button
+                    </Button>
+                    <Button disabled>Disabled Button</Button>
+                    <Button icon={<IoMail />}>With Icon</Button>
+                  </div>
+                </div>
+
+                {/* Full Width */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                    Full Width
+                  </h3>
+                  <Button fullWidth variant="purple">
+                    Full Width Button
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Input Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Input 컴포넌트</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4 max-w-md">
+                <Input
+                  label="이메일"
+                  type="email"
+                  placeholder="example@email.com"
+                  fullWidth
+                />
+                <Input
+                  label="비밀번호"
+                  type="password"
+                  placeholder="••••••••"
+                  helperText="8자 이상 입력해주세요"
+                  fullWidth
+                />
+                <Input
+                  label="검색"
+                  type="text"
+                  placeholder="강의 검색..."
+                  leftIcon={<IoSearch />}
+                  fullWidth
+                />
+                <Input
+                  label="에러 상태"
+                  type="text"
+                  error="올바른 형식이 아닙니다"
+                  fullWidth
+                />
+                <Textarea
+                  label="후기 작성"
+                  placeholder="수강 후기를 남겨주세요..."
+                  helperText="최소 10자 이상 작성해주세요"
+                  rows={6}
+                  fullWidth
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Card Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>카드 제목</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">기본 카드 컴포넌트입니다.</p>
+              </CardContent>
+            </Card>
+
+            <Card hoverable={false}>
+              <CardHeader>
+                <CardTitle>Hover 비활성화</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">Hover 효과가 없는 카드입니다.</p>
+              </CardContent>
+            </Card>
+
+            <Card padding="lg">
+              <CardHeader>
+                <CardTitle>Large Padding</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">패딩이 큰 카드입니다.</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Modal & Toast Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Modal & Toast 컴포넌트</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex flex-wrap gap-3">
+                  <Button onClick={() => setIsModalOpen(true)}>
+                    모달 열기
+                  </Button>
+                  <Button variant="green" onClick={() => success('성공!')}>
+                    Success Toast
+                  </Button>
+                  <Button variant="pink" onClick={() => error('에러 발생!')}>
+                    Error Toast
+                  </Button>
+                  <Button variant="cyan" onClick={() => info('정보 알림')}>
+                    Info Toast
+                  </Button>
+                  <Button variant="purple" onClick={() => warning('경고!')}>
+                    Warning Toast
+                  </Button>
+                </div>
+
+                <Modal
+                  isOpen={isModalOpen}
+                  onClose={() => setIsModalOpen(false)}
+                  title="모달 제목"
+                >
+                  <div className="space-y-4">
+                    <p>모달 컨텐츠가 여기에 표시됩니다.</p>
+                    <Input label="이름" fullWidth />
+                    <Textarea label="메시지" fullWidth rows={4} />
+                  </div>
+                  <ModalFooter>
+                    <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+                      취소
+                    </Button>
+                    <Button onClick={() => setIsModalOpen(false)}>
+                      확인
+                    </Button>
+                  </ModalFooter>
+                </Modal>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Loading Spinner Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Loading Spinner 컴포넌트</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="flex items-center gap-8">
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Small</p>
+                    <LoadingSpinner size="sm" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Medium</p>
+                    <LoadingSpinner size="md" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Large</p>
+                    <LoadingSpinner size="lg" />
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-8">
+                  <LoadingSpinner color="yellow" text="로딩 중..." />
+                  <LoadingSpinner color="purple" text="처리 중..." />
+                  <LoadingSpinner color="green" text="저장 중..." />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
