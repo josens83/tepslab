@@ -55,4 +55,47 @@ export const authAPI = {
   getCurrentUser: () => apiClient.get('/api/auth/me'),
 };
 
+// Course API
+export const courseAPI = {
+  getCourses: (params?: Record<string, any>) =>
+    apiClient.get('/api/courses', { params }),
+
+  getFeaturedCourses: () => apiClient.get('/api/courses/featured'),
+
+  getCourseById: (id: string) => apiClient.get(`/api/courses/${id}`),
+
+  checkEnrollment: (id: string) =>
+    apiClient.get(`/api/courses/${id}/check-enrollment`),
+
+  // Admin only
+  createCourse: (data: any) => apiClient.post('/api/courses', data),
+
+  updateCourse: (id: string, data: any) =>
+    apiClient.put(`/api/courses/${id}`, data),
+
+  deleteCourse: (id: string) => apiClient.delete(`/api/courses/${id}`),
+};
+
+// Enrollment API
+export const enrollmentAPI = {
+  enroll: (data: { courseId: string; paymentId?: string }) =>
+    apiClient.post('/api/enrollments', data),
+
+  getMyEnrollments: (params?: { status?: string }) =>
+    apiClient.get('/api/enrollments', { params }),
+
+  getEnrollmentById: (id: string) => apiClient.get(`/api/enrollments/${id}`),
+
+  updateProgress: (
+    id: string,
+    data: {
+      lessonId: string;
+      completed: boolean;
+      watchDuration?: number;
+    }
+  ) => apiClient.put(`/api/enrollments/${id}/progress`, data),
+
+  cancelEnrollment: (id: string) => apiClient.delete(`/api/enrollments/${id}`),
+};
+
 export default apiClient;
