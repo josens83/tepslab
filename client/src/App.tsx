@@ -24,6 +24,9 @@ import { AuthCallback } from './pages/AuthCallback';
 import { CoursesPage } from './pages/CoursesPage';
 import { CourseDetailPage } from './pages/CourseDetailPage';
 import { MyCoursesPage } from './pages/MyCoursesPage';
+import { CheckoutPage } from './pages/CheckoutPage';
+import { CheckoutSuccessPage } from './pages/CheckoutSuccessPage';
+import { CheckoutFailPage } from './pages/CheckoutFailPage';
 
 // Component Library Demo Page
 function ComponentDemo() {
@@ -286,6 +289,9 @@ function App() {
         <Route path="/courses/:id" element={<CourseDetailPage />} />
         <Route path="/courses" element={<CoursesPage />} />
         <Route path="/my-courses" element={<MyCoursesPage />} />
+        <Route path="/checkout/:courseId" element={<CheckoutPage />} />
+        <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+        <Route path="/checkout/fail" element={<CheckoutFailPage />} />
         <Route path="/components" element={<ComponentDemo />} />
         <Route path="/layout/*" element={<LayoutDemo />} />
       </Routes>

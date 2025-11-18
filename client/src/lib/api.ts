@@ -98,4 +98,26 @@ export const enrollmentAPI = {
   cancelEnrollment: (id: string) => apiClient.delete(`/api/enrollments/${id}`),
 };
 
+// Payment API
+export const paymentAPI = {
+  // Prepare payment
+  prepare: (data: { courseId: string }) =>
+    apiClient.post('/api/payments/ready', data),
+
+  // Confirm payment
+  confirm: (data: { orderId: string; paymentKey: string; amount: number }) =>
+    apiClient.post('/api/payments/confirm', data),
+
+  // Get payment list
+  getPayments: (params?: { status?: string; page?: number; limit?: number }) =>
+    apiClient.get('/api/payments', { params }),
+
+  // Get payment by ID
+  getPaymentById: (id: string) => apiClient.get(`/api/payments/${id}`),
+
+  // Cancel payment
+  cancel: (id: string, data: { cancelReason: string }) =>
+    apiClient.post(`/api/payments/${id}/cancel`, data),
+};
+
 export default apiClient;

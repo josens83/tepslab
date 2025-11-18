@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '../components/layout/MainLayout';
 import { Button } from '../components/common';
-import { courseAPI, enrollmentAPI } from '../lib/api';
+import { courseAPI } from '../lib/api';
 import type { Course } from '../types/course';
 import { useAuth } from '../hooks/useAuth';
 import { motion } from 'framer-motion';
@@ -48,7 +48,6 @@ export const CourseDetailPage: React.FC = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [enrolling, setEnrolling] = useState(false);
   const [isEnrolled, setIsEnrolled] = useState(false);
 
   useEffect(() => {
@@ -83,23 +82,14 @@ export const CourseDetailPage: React.FC = () => {
     }
   };
 
-  const handleEnroll = async () => {
+  const handleEnroll = () => {
     if (!user) {
       navigate('/login', { state: { from: `/courses/${id}` } });
       return;
     }
 
-    try {
-      setEnrolling(true);
-      await enrollmentAPI.enroll({ courseId: id! });
-      setIsEnrolled(true);
-      navigate('/my-courses');
-    } catch (err: any) {
-      alert(err.response?.data?.error || '수강 신청에 실패했습니다.');
-      console.error('Failed to enroll:', err);
-    } finally {
-      setEnrolling(false);
-    }
+    // 결제 페이지로 이동
+    navigate(`/checkout/${id}`);
   };
 
   const renderStars = (rating: number) => {
@@ -285,10 +275,8 @@ export const CourseDetailPage: React.FC = () => {
                       size="lg"
                       variant="yellow"
                       onClick={handleEnroll}
-                      loading={enrolling}
-                      disabled={enrolling}
                     >
-                      {enrolling ? '처리 중...' : '수강 신청하기'}
+                      수강 신청하기
                     </Button>
                   )}
 
