@@ -18,6 +18,9 @@ import { useToast } from './hooks/useToast';
 import { IoMail, IoSearch } from 'react-icons/io5';
 import { LayoutDemo } from './pages/LayoutDemo';
 import { LandingPage } from './pages/LandingPage';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { AuthCallback } from './pages/AuthCallback';
 
 // Component Library Demo Page
 function ComponentDemo() {
@@ -274,6 +277,9 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/components" element={<ComponentDemo />} />
         <Route path="/layout/*" element={<LayoutDemo />} />
       </Routes>

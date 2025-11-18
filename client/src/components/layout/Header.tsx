@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IoMenu, IoClose, IoChevronDown, IoPerson, IoLogOut } from 'react-icons/io5';
 import { Logo } from '../common';
 import { Button } from '../common';
+import { useAuth } from '../../hooks/useAuth';
 
 interface MenuItem {
   label: string;
@@ -26,23 +27,13 @@ const menuItems: MenuItem[] = [
   { label: '컨설팀스 소개', href: '/about' },
 ];
 
-interface HeaderProps {
-  isAuthenticated?: boolean;
-  userName?: string;
-  onLogin?: () => void;
-  onLogout?: () => void;
-}
-
-export const Header: React.FC<HeaderProps> = ({
-  isAuthenticated = false,
-  userName,
-  onLogin,
-  onLogout,
-}) => {
+export const Header: React.FC = () => {
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const location = useLocation();
 
   const isActive = (href: string) => location.pathname === href;
 
@@ -123,7 +114,7 @@ export const Header: React.FC<HeaderProps> = ({
                   className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
                 >
                   <IoPerson className="w-5 h-5" />
-                  <span className="font-medium">{userName || '사용자'}</span>
+                  <span className="font-medium">{user?.name || '사용자'}</span>
                   <IoChevronDown className="w-4 h-4" />
                 </button>
 
@@ -156,7 +147,8 @@ export const Header: React.FC<HeaderProps> = ({
                       <button
                         onClick={() => {
                           setIsUserMenuOpen(false);
-                          onLogout?.();
+                          logout();
+                          navigate('/');
                         }}
                         className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                       >
@@ -169,10 +161,12 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             ) : (
               <>
-                <Button variant="outline" size="sm" onClick={onLogin}>
-                  로그인
-                </Button>
-                <Link to="/signup">
+                <Link to="/login">
+                  <Button variant="outline" size="sm">
+                    로그인
+                  </Button>
+                </Link>
+                <Link to="/register">
                   <Button variant="yellow" size="sm">
                     회원가입
                   </Button>
@@ -214,7 +208,7 @@ export const Header: React.FC<HeaderProps> = ({
                       <IoPerson className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className="font-semibold">{userName || '사용자'}</p>
+                      <p className="font-semibold">{user?.name || '사용자'}</p>
                       <Link
                         to="/dashboard"
                         className="text-sm text-brand-yellow"
@@ -230,7 +224,8 @@ export const Header: React.FC<HeaderProps> = ({
                     fullWidth
                     onClick={() => {
                       setIsMobileMenuOpen(false);
-                      onLogout?.();
+                      logout();
+                      navigate('/');
                     }}
                   >
                     로그아웃
@@ -238,18 +233,16 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               ) : (
                 <div className="pb-4 border-b border-gray-200 space-y-2">
-                  <Button
-                    variant="yellow"
-                    size="sm"
-                    fullWidth
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      onLogin?.();
-                    }}
-                  >
-                    로그인
-                  </Button>
-                  <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button
+                      variant="yellow"
+                      size="sm"
+                      fullWidth
+                    >
+                      로그인
+                    </Button>
+                  </Link>
+                  <Link to="/register" onClick={() => setIsMobileMenuOpen(false)}>
                     <Button variant="outline" size="sm" fullWidth>
                       회원가입
                     </Button>

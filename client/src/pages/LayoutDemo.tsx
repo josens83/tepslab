@@ -1,19 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import { MainLayout, AdminLayout } from '../components/layout';
 import { Button, Card, CardHeader, CardTitle, CardContent } from '../components/common';
 
 // Main Layout Demo
 const MainLayoutDemo: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
   return (
-    <MainLayout
-      isAuthenticated={isAuthenticated}
-      userName="홍길동"
-      onLogin={() => setIsAuthenticated(true)}
-      onLogout={() => setIsAuthenticated(false)}
-    >
+    <MainLayout>
       <div className="max-w-7xl mx-auto px-4 py-12">
         <Card>
           <CardHeader>
@@ -25,12 +18,6 @@ const MainLayoutDemo: React.FC = () => {
                 Header와 Footer가 포함된 기본 레이아웃입니다.
               </p>
               <div className="flex gap-3">
-                <Button
-                  variant={isAuthenticated ? 'outline' : 'yellow'}
-                  onClick={() => setIsAuthenticated(!isAuthenticated)}
-                >
-                  {isAuthenticated ? '로그아웃' : '로그인'} 상태 토글
-                </Button>
                 <Link to="/admin-demo">
                   <Button variant="purple">관리자 레이아웃 보기</Button>
                 </Link>
