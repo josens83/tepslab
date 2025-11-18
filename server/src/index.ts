@@ -1,0 +1,69 @@
+import express, { Application } from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { connectDatabase } from './config/database';
+import authRoutes from './routes/authRoutes';
+import { errorHandler, notFound } from './middleware/errorHandler';
+
+// Load environment variables
+dotenv.config();
+
+const app: Application = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  credentials: true,
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Health check route
+app.get('/health', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// API Routes
+app.use('/api/auth', authRoutes);
+
+// Error handling
+app.use(notFound);
+app.use(errorHandler);
+
+// Start server
+const startServer = async () => {
+  try {
+    // Connect to database
+    await connectDatabase();
+
+    // Start listening
+    app.listen(PORT, () => {
+      console.log('');
+      console.log('🚀 Server started successfully');
+      console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`   Port: ${PORT}`);
+      console.log(`   URL: http://localhost:${PORT}`);
+      console.log('');
+      console.log('📝 Available routes:');
+      console.log('   GET  /health');
+      console.log('   POST /api/auth/register');
+      console.log('   POST /api/auth/login');
+      console.log('   GET  /api/auth/me');
+      console.log('   GET  /api/auth/kakao');
+      console.log('   GET  /api/auth/kakao/callback');
+      console.log('   GET  /api/auth/naver');
+      console.log('   GET  /api/auth/naver/callback');
+      console.log('');
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
