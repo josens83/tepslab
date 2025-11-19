@@ -78,3 +78,23 @@ export const authorize = (...roles: string[]) => {
     next();
   };
 };
+
+export const requireAdmin = (req: AuthRequest, res: Response, next: NextFunction): void => {
+  if (!req.user) {
+    res.status(401).json({
+      success: false,
+      error: 'Not authenticated',
+    });
+    return;
+  }
+
+  if (req.user.role !== 'admin') {
+    res.status(403).json({
+      success: false,
+      error: '관리자 권한이 필요합니다.',
+    });
+    return;
+  }
+
+  next();
+};

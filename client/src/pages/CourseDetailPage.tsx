@@ -17,6 +17,7 @@ import {
   IoCheckmarkCircle,
   IoArrowBack,
 } from 'react-icons/io5';
+import { ReviewList } from '../components/review';
 
 const targetScoreColors: Record<number, string> = {
   327: 'bg-green-100 text-green-800 border-green-300',
@@ -384,6 +385,20 @@ export const CourseDetailPage: React.FC = () => {
                   </ul>
                 </motion.div>
               )}
+
+              {/* Reviews */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="bg-white rounded-xl shadow-md p-8"
+              >
+                <ReviewList
+                  courseId={course._id}
+                  courseTitle={course.title}
+                  isEnrolled={isEnrolled}
+                />
+              </motion.div>
             </div>
 
             {/* Right: Instructor Info */}

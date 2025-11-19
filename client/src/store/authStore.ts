@@ -6,6 +6,7 @@ interface User {
   email: string;
   name: string;
   phone?: string;
+  birthDate?: string;
   role: 'student' | 'admin';
   targetScore?: number;
   isEmailVerified: boolean;

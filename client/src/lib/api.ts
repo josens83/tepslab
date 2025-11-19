@@ -120,4 +120,93 @@ export const paymentAPI = {
     apiClient.post(`/api/payments/${id}/cancel`, data),
 };
 
+// User API
+export const userAPI = {
+  // Get profile
+  getProfile: () => apiClient.get('/api/users/profile'),
+
+  // Update profile
+  updateProfile: (data: {
+    name?: string;
+    phone?: string;
+    birthDate?: string;
+    targetScore?: number;
+  }) => apiClient.put('/api/users/profile', data),
+
+  // Change password
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    apiClient.put('/api/users/password', data),
+
+  // Delete account
+  deleteAccount: (data: { password: string }) =>
+    apiClient.delete('/api/users/account', { data }),
+};
+
+// Review API
+export const reviewAPI = {
+  // Get course reviews
+  getCourseReviews: (
+    courseId: string,
+    params?: { page?: number; limit?: number; sort?: string }
+  ) => apiClient.get(`/api/reviews/course/${courseId}`, { params }),
+
+  // Get my reviews
+  getMyReviews: () => apiClient.get('/api/reviews/my'),
+
+  // Create review
+  createReview: (data: {
+    courseId: string;
+    rating: number;
+    title: string;
+    comment: string;
+    beforeScore?: number;
+    afterScore?: number;
+    studyDuration?: number;
+  }) => apiClient.post('/api/reviews', data),
+
+  // Update review
+  updateReview: (
+    id: string,
+    data: {
+      rating?: number;
+      title?: string;
+      comment?: string;
+      beforeScore?: number;
+      afterScore?: number;
+      studyDuration?: number;
+    }
+  ) => apiClient.put(`/api/reviews/${id}`, data),
+
+  // Delete review
+  deleteReview: (id: string) => apiClient.delete(`/api/reviews/${id}`),
+
+  // Mark review as helpful
+  markHelpful: (id: string) => apiClient.post(`/api/reviews/${id}/helpful`),
+};
+
+// Test API
+export const testAPI = {
+  // Get all tests
+  getTests: (params?: { testType?: string; targetScore?: number }) =>
+    apiClient.get('/api/tests', { params }),
+
+  // Get test by ID (with questions)
+  getTestById: (id: string) => apiClient.get(`/api/tests/${id}`),
+
+  // Submit test answers
+  submitTest: (
+    id: string,
+    data: {
+      answers: { questionId: string; answer: number; timeSpent?: number }[];
+      timeSpent: number;
+    }
+  ) => apiClient.post(`/api/tests/${id}/submit`, data),
+
+  // Get my test results
+  getMyResults: () => apiClient.get('/api/tests/results/my'),
+
+  // Get specific test result
+  getResultById: (id: string) => apiClient.get(`/api/tests/results/${id}`),
+};
+
 export default apiClient;
