@@ -184,4 +184,29 @@ export const reviewAPI = {
   markHelpful: (id: string) => apiClient.post(`/api/reviews/${id}/helpful`),
 };
 
+// Test API
+export const testAPI = {
+  // Get all tests
+  getTests: (params?: { testType?: string; targetScore?: number }) =>
+    apiClient.get('/api/tests', { params }),
+
+  // Get test by ID (with questions)
+  getTestById: (id: string) => apiClient.get(`/api/tests/${id}`),
+
+  // Submit test answers
+  submitTest: (
+    id: string,
+    data: {
+      answers: { questionId: string; answer: number; timeSpent?: number }[];
+      timeSpent: number;
+    }
+  ) => apiClient.post(`/api/tests/${id}/submit`, data),
+
+  // Get my test results
+  getMyResults: () => apiClient.get('/api/tests/results/my'),
+
+  // Get specific test result
+  getResultById: (id: string) => apiClient.get(`/api/tests/results/${id}`),
+};
+
 export default apiClient;

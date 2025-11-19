@@ -8,6 +8,8 @@ import enrollmentRoutes from './routes/enrollmentRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import userRoutes from './routes/userRoutes';
 import reviewRoutes from './routes/reviewRoutes';
+import testRoutes from './routes/testRoutes';
+import adminRoutes from './routes/adminRoutes';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 // Load environment variables
@@ -40,6 +42,8 @@ app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/tests', testRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Error handling
 app.use(notFound);
@@ -100,6 +104,20 @@ const startServer = async () => {
       console.log('   PUT  /api/reviews/:id');
       console.log('   DELETE /api/reviews/:id');
       console.log('   POST /api/reviews/:id/helpful');
+      console.log('');
+      console.log('   Tests:');
+      console.log('   GET  /api/tests');
+      console.log('   GET  /api/tests/:id');
+      console.log('   POST /api/tests/:id/submit');
+      console.log('   GET  /api/tests/results/my');
+      console.log('   GET  /api/tests/results/:id');
+      console.log('   POST /api/tests (Admin)');
+      console.log('');
+      console.log('   Admin:');
+      console.log('   GET  /api/admin/stats');
+      console.log('   GET  /api/admin/users');
+      console.log('   PUT  /api/admin/users/:id/status');
+      console.log('   GET  /api/admin/courses');
       console.log('');
     });
   } catch (error) {

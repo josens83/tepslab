@@ -30,6 +30,8 @@ import { CheckoutFailPage } from './pages/CheckoutFailPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { LessonPlayerPage } from './pages/LessonPlayerPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { DiagnosticTestPage } from './pages/DiagnosticTestPage';
+import { TestResultPage } from './pages/TestResultPage';
 
 // Component Library Demo Page
 function ComponentDemo() {
@@ -298,6 +300,8 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/learn/:courseId/:lessonId" element={<LessonPlayerPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/test/:id" element={<DiagnosticTestPage />} />
+        <Route path="/test/result/:id" element={<TestResultPage />} />
         <Route path="/components" element={<ComponentDemo />} />
         <Route path="/layout/*" element={<LayoutDemo />} />
       </Routes>

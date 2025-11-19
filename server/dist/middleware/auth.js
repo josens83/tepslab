@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authorize = exports.authenticate = void 0;
+exports.requireAdmin = exports.authorize = exports.authenticate = void 0;
 const jwt_1 = require("../utils/jwt");
 const User_1 = require("../models/User");
 const authenticate = async (req, res, next) => {
@@ -67,4 +67,22 @@ const authorize = (...roles) => {
     };
 };
 exports.authorize = authorize;
+const requireAdmin = (req, res, next) => {
+    if (!req.user) {
+        res.status(401).json({
+            success: false,
+            error: 'Not authenticated',
+        });
+        return;
+    }
+    if (req.user.role !== 'admin') {
+        res.status(403).json({
+            success: false,
+            error: '관리자 권한이 필요합니다.',
+        });
+        return;
+    }
+    next();
+};
+exports.requireAdmin = requireAdmin;
 //# sourceMappingURL=auth.js.map
