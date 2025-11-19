@@ -229,3 +229,110 @@ export const getAdminCourses = async (req: AuthRequest, res: Response): Promise<
     res.status(500).json({ error: '강의 목록 조회 중 오류가 발생했습니다.' });
   }
 };
+
+/**
+ * 결제 내역 조회 (관리자용)
+ * GET /api/admin/payments
+ */
+export const getAdminPayments = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const status = req.query.status as string;
+    const startDate = req.query.startDate as string;
+    const endDate = req.query.endDate as string;
+
+    const skip = (page - 1) * limit;
+
+    const query: Record<string, unknown> = {};
+    if (status) query.status = status;
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) (query.createdAt as Record<string, unknown>).$gte = new Date(startDate);
+      if (endDate) (query.createdAt as Record<string, unknown>).$lte = new Date(endDate);
+    }
+
+    const [payments, total] = await Promise.all([
+      Payment.find(query)
+        .populate('userId', 'name email')
+        .populate('courseId', 'title price')
+        .sort('-createdAt')
+        .skip(skip)
+        .limit(limit),
+      Payment.countDocuments(query),
+    ]);
+
+    // Calculate totals
+    const statusStats = await Payment.aggregate([
+      { $match: query },
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+          total: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        payments,
+        statusStats,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit),
+        },
+      },
+    });
+  } catch (error) {
+    console.error('Get admin payments error:', error);
+    res.status(500).json({ error: '결제 내역 조회 중 오류가 발생했습니다.' });
+  }
+};
+
+/**
+ * 결제 환불 처리 (관리자용)
+ * POST /api/admin/payments/:id/refund
+ */
+export const refundPayment = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    const payment = await Payment.findById(id);
+
+    if (!payment) {
+      res.status(404).json({ error: '결제 내역을 찾을 수 없습니다.' });
+      return;
+    }
+
+    if (payment.status !== 'completed') {
+      res.status(400).json({ error: '완료된 결제만 환불할 수 있습니다.' });
+      return;
+    }
+
+    // Update payment status
+    payment.status = 'refunded';
+    payment.cancelReason = reason || '관리자 환불 처리';
+    payment.cancelledAt = new Date();
+    await payment.save();
+
+    // Cancel enrollment
+    await Enrollment.findOneAndUpdate(
+      { paymentId: payment._id },
+      { status: 'cancelled' }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: '환불이 처리되었습니다.',
+      data: { payment },
+    });
+  } catch (error) {
+    console.error('Refund payment error:', error);
+    res.status(500).json({ error: '환불 처리 중 오류가 발생했습니다.' });
+  }
+};

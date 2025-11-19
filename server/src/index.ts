@@ -1,6 +1,7 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import { connectDatabase } from './config/database';
 import authRoutes from './routes/authRoutes';
 import courseRoutes from './routes/courseRoutes';
@@ -10,6 +11,7 @@ import userRoutes from './routes/userRoutes';
 import reviewRoutes from './routes/reviewRoutes';
 import testRoutes from './routes/testRoutes';
 import adminRoutes from './routes/adminRoutes';
+import uploadRoutes from './routes/uploadRoutes';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 // Load environment variables
@@ -25,6 +27,9 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Health check route
 app.get('/health', (_req, res) => {
@@ -44,6 +49,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/tests', testRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/uploads', uploadRoutes);
 
 // Error handling
 app.use(notFound);
@@ -118,6 +124,15 @@ const startServer = async () => {
       console.log('   GET  /api/admin/users');
       console.log('   PUT  /api/admin/users/:id/status');
       console.log('   GET  /api/admin/courses');
+      console.log('   GET  /api/admin/payments');
+      console.log('   POST /api/admin/payments/:id/refund');
+      console.log('');
+      console.log('   Uploads:');
+      console.log('   POST /api/uploads/image');
+      console.log('   POST /api/uploads/images');
+      console.log('   POST /api/uploads/video (Admin)');
+      console.log('   POST /api/uploads/avatar');
+      console.log('   DELETE /api/uploads/:filename');
       console.log('');
     });
   } catch (error) {

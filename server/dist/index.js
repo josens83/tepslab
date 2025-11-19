@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const path_1 = __importDefault(require("path"));
 const database_1 = require("./config/database");
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const courseRoutes_1 = __importDefault(require("./routes/courseRoutes"));
@@ -15,6 +16,7 @@ const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const reviewRoutes_1 = __importDefault(require("./routes/reviewRoutes"));
 const testRoutes_1 = __importDefault(require("./routes/testRoutes"));
 const adminRoutes_1 = __importDefault(require("./routes/adminRoutes"));
+const uploadRoutes_1 = __importDefault(require("./routes/uploadRoutes"));
 const errorHandler_1 = require("./middleware/errorHandler");
 // Load environment variables
 dotenv_1.default.config();
@@ -27,6 +29,8 @@ app.use((0, cors_1.default)({
 }));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
+// Serve static files from uploads directory
+app.use('/uploads', express_1.default.static(path_1.default.join(process.cwd(), 'uploads')));
 // Health check route
 app.get('/health', (_req, res) => {
     res.json({
@@ -44,6 +48,7 @@ app.use('/api/users', userRoutes_1.default);
 app.use('/api/reviews', reviewRoutes_1.default);
 app.use('/api/tests', testRoutes_1.default);
 app.use('/api/admin', adminRoutes_1.default);
+app.use('/api/uploads', uploadRoutes_1.default);
 // Error handling
 app.use(errorHandler_1.notFound);
 app.use(errorHandler_1.errorHandler);
@@ -115,6 +120,15 @@ const startServer = async () => {
             console.log('   GET  /api/admin/users');
             console.log('   PUT  /api/admin/users/:id/status');
             console.log('   GET  /api/admin/courses');
+            console.log('   GET  /api/admin/payments');
+            console.log('   POST /api/admin/payments/:id/refund');
+            console.log('');
+            console.log('   Uploads:');
+            console.log('   POST /api/uploads/image');
+            console.log('   POST /api/uploads/images');
+            console.log('   POST /api/uploads/video (Admin)');
+            console.log('   POST /api/uploads/avatar');
+            console.log('   DELETE /api/uploads/:filename');
             console.log('');
         });
     }

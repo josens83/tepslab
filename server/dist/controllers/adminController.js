@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAdminCourses = exports.updateUserStatus = exports.getUsers = exports.getDashboardStats = void 0;
+exports.refundPayment = exports.getAdminPayments = exports.getAdminCourses = exports.updateUserStatus = exports.getUsers = exports.getDashboardStats = void 0;
 const User_1 = require("../models/User");
 const Course_1 = require("../models/Course");
 const Enrollment_1 = require("../models/Enrollment");
@@ -207,4 +207,102 @@ const getAdminCourses = async (req, res) => {
     }
 };
 exports.getAdminCourses = getAdminCourses;
+/**
+ * 결제 내역 조회 (관리자용)
+ * GET /api/admin/payments
+ */
+const getAdminPayments = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const status = req.query.status;
+        const startDate = req.query.startDate;
+        const endDate = req.query.endDate;
+        const skip = (page - 1) * limit;
+        const query = {};
+        if (status)
+            query.status = status;
+        if (startDate || endDate) {
+            query.createdAt = {};
+            if (startDate)
+                query.createdAt.$gte = new Date(startDate);
+            if (endDate)
+                query.createdAt.$lte = new Date(endDate);
+        }
+        const [payments, total] = await Promise.all([
+            Payment_1.default.find(query)
+                .populate('userId', 'name email')
+                .populate('courseId', 'title price')
+                .sort('-createdAt')
+                .skip(skip)
+                .limit(limit),
+            Payment_1.default.countDocuments(query),
+        ]);
+        // Calculate totals
+        const statusStats = await Payment_1.default.aggregate([
+            { $match: query },
+            {
+                $group: {
+                    _id: '$status',
+                    count: { $sum: 1 },
+                    total: { $sum: '$amount' },
+                },
+            },
+        ]);
+        res.status(200).json({
+            success: true,
+            data: {
+                payments,
+                statusStats,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    pages: Math.ceil(total / limit),
+                },
+            },
+        });
+    }
+    catch (error) {
+        console.error('Get admin payments error:', error);
+        res.status(500).json({ error: '결제 내역 조회 중 오류가 발생했습니다.' });
+    }
+};
+exports.getAdminPayments = getAdminPayments;
+/**
+ * 결제 환불 처리 (관리자용)
+ * POST /api/admin/payments/:id/refund
+ */
+const refundPayment = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { reason } = req.body;
+        const payment = await Payment_1.default.findById(id);
+        if (!payment) {
+            res.status(404).json({ error: '결제 내역을 찾을 수 없습니다.' });
+            return;
+        }
+        if (payment.status !== 'completed') {
+            res.status(400).json({ error: '완료된 결제만 환불할 수 있습니다.' });
+            return;
+        }
+        // Update payment status
+        payment.status = 'refunded';
+        payment.cancelReason = reason || '관리자 환불 처리';
+        payment.cancelledAt = new Date();
+        await payment.save();
+        // Cancel enrollment
+        await Enrollment_1.Enrollment.findOneAndUpdate({ paymentId: payment._id }, { status: 'cancelled' });
+        res.status(200).json({
+            success: true,
+            message: '환불이 처리되었습니다.',
+            data: { payment },
+        });
+    }
+    catch (error) {
+        console.error('Refund payment error:', error);
+        res.status(500).json({ error: '환불 처리 중 오류가 발생했습니다.' });
+    }
+};
+exports.refundPayment = refundPayment;
 //# sourceMappingURL=adminController.js.map
