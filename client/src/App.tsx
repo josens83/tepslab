@@ -29,6 +29,7 @@ import { CheckoutSuccessPage } from './pages/CheckoutSuccessPage';
 import { CheckoutFailPage } from './pages/CheckoutFailPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { LessonPlayerPage } from './pages/LessonPlayerPage';
+import { ProfilePage } from './pages/ProfilePage';
 
 // Component Library Demo Page
 function ComponentDemo() {
@@ -296,6 +297,7 @@ function App() {
         <Route path="/checkout/fail" element={<CheckoutFailPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/learn/:courseId/:lessonId" element={<LessonPlayerPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/components" element={<ComponentDemo />} />
         <Route path="/layout/*" element={<LayoutDemo />} />
       </Routes>

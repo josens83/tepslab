@@ -11,6 +11,8 @@ const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const courseRoutes_1 = __importDefault(require("./routes/courseRoutes"));
 const enrollmentRoutes_1 = __importDefault(require("./routes/enrollmentRoutes"));
 const paymentRoutes_1 = __importDefault(require("./routes/paymentRoutes"));
+const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
+const reviewRoutes_1 = __importDefault(require("./routes/reviewRoutes"));
 const errorHandler_1 = require("./middleware/errorHandler");
 // Load environment variables
 dotenv_1.default.config();
@@ -36,6 +38,8 @@ app.use('/api/auth', authRoutes_1.default);
 app.use('/api/courses', courseRoutes_1.default);
 app.use('/api/enrollments', enrollmentRoutes_1.default);
 app.use('/api/payments', paymentRoutes_1.default);
+app.use('/api/users', userRoutes_1.default);
+app.use('/api/reviews', reviewRoutes_1.default);
 // Error handling
 app.use(errorHandler_1.notFound);
 app.use(errorHandler_1.errorHandler);
@@ -79,6 +83,20 @@ const startServer = async () => {
             console.log('   GET  /api/payments');
             console.log('   GET  /api/payments/:id');
             console.log('   POST /api/payments/:id/cancel');
+            console.log('');
+            console.log('   Users:');
+            console.log('   GET  /api/users/profile');
+            console.log('   PUT  /api/users/profile');
+            console.log('   PUT  /api/users/password');
+            console.log('   DELETE /api/users/account');
+            console.log('');
+            console.log('   Reviews:');
+            console.log('   GET  /api/reviews/course/:courseId');
+            console.log('   GET  /api/reviews/my');
+            console.log('   POST /api/reviews');
+            console.log('   PUT  /api/reviews/:id');
+            console.log('   DELETE /api/reviews/:id');
+            console.log('   POST /api/reviews/:id/helpful');
             console.log('');
         });
     }

@@ -6,6 +6,8 @@ import authRoutes from './routes/authRoutes';
 import courseRoutes from './routes/courseRoutes';
 import enrollmentRoutes from './routes/enrollmentRoutes';
 import paymentRoutes from './routes/paymentRoutes';
+import userRoutes from './routes/userRoutes';
+import reviewRoutes from './routes/reviewRoutes';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 // Load environment variables
@@ -36,6 +38,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // Error handling
 app.use(notFound);
@@ -82,6 +86,20 @@ const startServer = async () => {
       console.log('   GET  /api/payments');
       console.log('   GET  /api/payments/:id');
       console.log('   POST /api/payments/:id/cancel');
+      console.log('');
+      console.log('   Users:');
+      console.log('   GET  /api/users/profile');
+      console.log('   PUT  /api/users/profile');
+      console.log('   PUT  /api/users/password');
+      console.log('   DELETE /api/users/account');
+      console.log('');
+      console.log('   Reviews:');
+      console.log('   GET  /api/reviews/course/:courseId');
+      console.log('   GET  /api/reviews/my');
+      console.log('   POST /api/reviews');
+      console.log('   PUT  /api/reviews/:id');
+      console.log('   DELETE /api/reviews/:id');
+      console.log('   POST /api/reviews/:id/helpful');
       console.log('');
     });
   } catch (error) {
