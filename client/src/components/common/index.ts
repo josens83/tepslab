@@ -16,3 +16,5 @@ export type { ToastType } from './Toast';
 
 export { Logo } from './Logo';
 export { default as LogoDefault } from './Logo';
+
+export { ProtectedRoute } from './ProtectedRoute';
