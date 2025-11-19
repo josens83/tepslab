@@ -27,6 +27,7 @@ import { MyCoursesPage } from './pages/MyCoursesPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { CheckoutSuccessPage } from './pages/CheckoutSuccessPage';
 import { CheckoutFailPage } from './pages/CheckoutFailPage';
+import { DashboardPage } from './pages/DashboardPage';
 
 // Component Library Demo Page
 function ComponentDemo() {
@@ -292,6 +293,7 @@ function App() {
         <Route path="/checkout/:courseId" element={<CheckoutPage />} />
         <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
         <Route path="/checkout/fail" element={<CheckoutFailPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/components" element={<ComponentDemo />} />
         <Route path="/layout/*" element={<LayoutDemo />} />
       </Routes>
