@@ -28,6 +28,7 @@ import { CheckoutPage } from './pages/CheckoutPage';
 import { CheckoutSuccessPage } from './pages/CheckoutSuccessPage';
 import { CheckoutFailPage } from './pages/CheckoutFailPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { LessonPlayerPage } from './pages/LessonPlayerPage';
 
 // Component Library Demo Page
 function ComponentDemo() {
@@ -294,6 +295,7 @@ function App() {
         <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
         <Route path="/checkout/fail" element={<CheckoutFailPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/learn/:courseId/:lessonId" element={<LessonPlayerPage />} />
         <Route path="/components" element={<ComponentDemo />} />
         <Route path="/layout/*" element={<LayoutDemo />} />
       </Routes>
