@@ -16,6 +16,7 @@ import { initOpenAI } from './config/openai';
 import { swaggerSpec, serveSwaggerJson } from './config/swagger';
 import swaggerUi from 'swagger-ui-express';
 import authRoutes from './routes/authRoutes';
+import twoFactorRoutes from './routes/twoFactorRoutes';
 import courseRoutes from './routes/courseRoutes';
 import enrollmentRoutes from './routes/enrollmentRoutes';
 import paymentRoutes from './routes/paymentRoutes';
@@ -134,6 +135,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/auth/2fa', twoFactorRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/payments', paymentRoutes);
