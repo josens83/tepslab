@@ -1,0 +1,35 @@
+🚀 TEPS Lab has been successfully deployed!
+
+Your release is named: {{ .Release.Name }}
+
+To get the application URL:
+{{- if .Values.ingress.enabled }}
+  {{- range .Values.ingress.hosts }}
+  https://{{ .host }}
+  {{- end }}
+{{- else }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Values.namespace }} -l "app=client" -o jsonpath="{.items[0].metadata.name}")
+  kubectl --namespace {{ .Values.namespace }} port-forward $POD_NAME 8080:80
+  echo "Visit http://127.0.0.1:8080 to access the application"
+{{- end }}
+
+To check the status of your deployment:
+  kubectl get all -n {{ .Values.namespace }}
+
+To view logs:
+  # Server logs
+  kubectl logs -n {{ .Values.namespace }} -l app=server --tail=100 -f
+
+  # Client logs
+  kubectl logs -n {{ .Values.namespace }} -l app=client --tail=100 -f
+
+To access the API documentation:
+  https://api.{{ .Values.global.domain }}/api-docs
+
+Monitoring endpoints:
+  - Health Check: https://api.{{ .Values.global.domain }}/health
+  - API Docs: https://api.{{ .Values.global.domain }}/api-docs
+
+For more information, visit: https://{{ .Values.global.domain }}
+
+Happy Learning! 📚

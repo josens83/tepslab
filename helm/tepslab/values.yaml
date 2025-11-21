@@ -1,0 +1,182 @@
+# Default values for TEPS Lab Helm Chart
+
+# Global Configuration
+global:
+  environment: production
+  domain: tepslab.com
+
+# Namespace
+namespace: tepslab
+
+# MongoDB Configuration
+mongodb:
+  enabled: true
+  image:
+    repository: mongo
+    tag: "7"
+    pullPolicy: IfNotPresent
+  replicas: 1
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: standard
+  auth:
+    rootUsername: admin
+    rootPassword: change-this-password
+    database: tepslab
+
+# Redis Configuration
+redis:
+  enabled: true
+  image:
+    repository: redis
+    tag: "7-alpine"
+    pullPolicy: IfNotPresent
+  replicas: 1
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: standard
+
+# Server (Backend API) Configuration
+server:
+  enabled: true
+  image:
+    repository: ghcr.io/josens83/tepslab-server
+    tag: latest
+    pullPolicy: Always
+  replicas: 3
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  env:
+    NODE_ENV: production
+    PORT: "5000"
+  persistence:
+    uploads:
+      enabled: true
+      size: 20Gi
+      storageClass: standard
+
+# Client (Frontend) Configuration
+client:
+  enabled: true
+  image:
+    repository: ghcr.io/josens83/tepslab-client
+    tag: latest
+    pullPolicy: Always
+  replicas: 2
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+# Ingress Configuration
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    cert-manager.io/acme-challenge-type: "http01"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    nginx.ingress.kubernetes.io/limit-connections: "10"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+  hosts:
+    - host: tepslab.com
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: tepslab-client
+          servicePort: 80
+    - host: www.tepslab.com
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: tepslab-client
+          servicePort: 80
+    - host: api.tepslab.com
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: tepslab-server
+          servicePort: 5000
+  tls:
+    - secretName: tepslab-tls
+      hosts:
+        - tepslab.com
+        - www.tepslab.com
+        - api.tepslab.com
+
+# Secrets Configuration (these should be overridden with actual values)
+secrets:
+  jwt:
+    secret: "your-super-secret-jwt-key-change-in-production"
+    refreshSecret: "your-super-secret-refresh-key-change-in-production"
+  oauth:
+    kakaoClientId: ""
+    kakaoClientSecret: ""
+    naverClientId: ""
+    naverClientSecret: ""
+  payment:
+    tossSecretKey: ""
+  smtp:
+    user: ""
+    password: ""
+  monitoring:
+    sentryDsn: ""
+    gaMeasurementId: ""
+
+# ConfigMap Configuration
+config:
+  corsOrigin: "https://tepslab.com"
+  smtpHost: "smtp.gmail.com"
+  smtpPort: "587"
+
+# Let's Encrypt Configuration
+certManager:
+  enabled: true
+  email: admin@tepslab.com
+  issuer: letsencrypt-prod
+
+# Monitoring (optional)
+monitoring:
+  enabled: false
+  prometheus:
+    enabled: false
+  grafana:
+    enabled: false
