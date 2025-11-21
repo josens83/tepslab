@@ -1,11 +1,24 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { imagetools } from 'vite-imagetools'
+import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    imagetools({
+      defaultDirectives: (url) => {
+        if (url.searchParams.has('responsive')) {
+          return new URLSearchParams({
+            format: 'webp;avif;jpg',
+            w: '400;800;1200',
+          })
+        }
+        return new URLSearchParams()
+      },
+    }),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
@@ -102,4 +115,64 @@ export default defineConfig({
       },
     }),
   ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  build: {
+    target: 'esnext',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks for better caching
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['framer-motion', 'react-icons'],
+          'payment-vendor': ['@tosspayments/payment-sdk'],
+          'analytics-vendor': ['@sentry/react', 'react-ga4'],
+        },
+        // Optimize chunk file names
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+      },
+    },
+    // Chunk size warning limit
+    chunkSizeWarningLimit: 600,
+    // Enable CSS code splitting
+    cssCodeSplit: true,
+    // Source maps for production (optional)
+    sourcemap: false,
+  },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'zustand',
+      'axios',
+      'framer-motion',
+    ],
+  },
+  server: {
+    port: 5173,
+    strictPort: false,
+    host: true,
+    // HMR configuration
+    hmr: {
+      overlay: true,
+    },
+  },
+  preview: {
+    port: 4173,
+    strictPort: false,
+    host: true,
+  },
 })

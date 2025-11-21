@@ -8,7 +8,12 @@ import xss from 'xss-clean';
 import hpp from 'hpp';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import * as Sentry from '@sentry/node';
+import { initSentry } from './config/sentry';
 import { connectDatabase } from './config/database';
+import { initRedis } from './config/redis';
+import { swaggerSpec, serveSwaggerJson } from './config/swagger';
+import swaggerUi from 'swagger-ui-express';
 import authRoutes from './routes/authRoutes';
 import courseRoutes from './routes/courseRoutes';
 import enrollmentRoutes from './routes/enrollmentRoutes';
@@ -19,13 +24,21 @@ import testRoutes from './routes/testRoutes';
 import adminRoutes from './routes/adminRoutes';
 import sitemapRoutes from './routes/sitemapRoutes';
 import uploadRoutes from './routes/uploadRoutes';
+import noteRoutes from './routes/noteRoutes';
+import bookmarkRoutes from './routes/bookmarkRoutes';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 // Load environment variables
 dotenv.config();
 
+// Initialize Sentry
+initSentry();
+
 const app: Application = express();
 const PORT = process.env.PORT || 5000;
+
+// Sentry request handler must be the first middleware
+app.use(Sentry.Handlers.requestHandler());
 
 // Security Middleware
 // Set security HTTP headers
@@ -110,6 +123,13 @@ app.get('/health', (_req, res) => {
   });
 });
 
+// API Documentation
+app.get('/api-docs/swagger.json', serveSwaggerJson);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'TEPS Lab API Docs',
+}));
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
@@ -121,9 +141,14 @@ app.use('/api/tests', testRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/sitemap', sitemapRoutes);
+app.use('/api/notes', noteRoutes);
+app.use('/api/bookmarks', bookmarkRoutes);
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
+
+// Sentry error handler must be before other error handlers
+app.use(Sentry.Handlers.errorHandler());
 
 // Error handling
 app.use(notFound);
@@ -134,6 +159,9 @@ const startServer = async () => {
   try {
     // Connect to database
     await connectDatabase();
+
+    // Initialize Redis (optional)
+    initRedis();
 
     // Start listening
     app.listen(PORT, () => {
