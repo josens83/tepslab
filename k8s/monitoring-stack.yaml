@@ -1,0 +1,418 @@
+---
+# Namespace for monitoring
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+
+---
+# Prometheus Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      serviceAccountName: prometheus
+      containers:
+        - name: prometheus
+          image: prom/prometheus:latest
+          args:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus'
+            - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+            - '--web.console.templates=/usr/share/prometheus/consoles'
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+            - name: alerts
+              mountPath: /etc/prometheus/alerts
+            - name: storage
+              mountPath: /prometheus
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus-config
+        - name: alerts
+          configMap:
+            name: prometheus-alerts
+        - name: storage
+          persistentVolumeClaim:
+            claimName: prometheus-pvc
+
+---
+# Prometheus Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  selector:
+    app: prometheus
+  ports:
+    - port: 9090
+      targetPort: 9090
+  type: ClusterIP
+
+---
+# Grafana Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secrets
+                  key: admin-password
+          volumeMounts:
+            - name: storage
+              mountPath: /var/lib/grafana
+            - name: datasources
+              mountPath: /etc/grafana/provisioning/datasources
+            - name: dashboards-config
+              mountPath: /etc/grafana/provisioning/dashboards
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+        - name: datasources
+          configMap:
+            name: grafana-datasources
+        - name: dashboards-config
+          configMap:
+            name: grafana-dashboards
+
+---
+# Grafana Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  selector:
+    app: grafana
+  ports:
+    - port: 3000
+      targetPort: 3000
+  type: ClusterIP
+
+---
+# Alertmanager Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertmanager
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alertmanager
+  template:
+    metadata:
+      labels:
+        app: alertmanager
+    spec:
+      containers:
+        - name: alertmanager
+          image: prom/alertmanager:latest
+          args:
+            - '--config.file=/etc/alertmanager/alertmanager.yml'
+            - '--storage.path=/alertmanager'
+          ports:
+            - containerPort: 9093
+          volumeMounts:
+            - name: config
+              mountPath: /etc/alertmanager
+            - name: storage
+              mountPath: /alertmanager
+      volumes:
+        - name: config
+          configMap:
+            name: alertmanager-config
+        - name: storage
+          emptyDir: {}
+
+---
+# Alertmanager Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager
+  namespace: monitoring
+spec:
+  selector:
+    app: alertmanager
+  ports:
+    - port: 9093
+      targetPort: 9093
+  type: ClusterIP
+
+---
+# Elasticsearch Deployment
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+  namespace: monitoring
+spec:
+  serviceName: elasticsearch
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+          ports:
+            - containerPort: 9200
+            - containerPort: 9300
+          env:
+            - name: discovery.type
+              value: single-node
+            - name: ES_JAVA_OPTS
+              value: "-Xms512m -Xmx512m"
+            - name: xpack.security.enabled
+              value: "false"
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/elasticsearch/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+
+---
+# Elasticsearch Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  namespace: monitoring
+spec:
+  selector:
+    app: elasticsearch
+  ports:
+    - port: 9200
+      targetPort: 9200
+      name: http
+    - port: 9300
+      targetPort: 9300
+      name: transport
+  type: ClusterIP
+
+---
+# Logstash Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      containers:
+        - name: logstash
+          image: docker.elastic.co/logstash/logstash:8.11.0
+          ports:
+            - containerPort: 5044
+            - containerPort: 9600
+          volumeMounts:
+            - name: config
+              mountPath: /usr/share/logstash/pipeline
+      volumes:
+        - name: config
+          configMap:
+            name: logstash-config
+
+---
+# Logstash Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash
+  namespace: monitoring
+spec:
+  selector:
+    app: logstash
+  ports:
+    - port: 5044
+      targetPort: 5044
+      name: beats
+    - port: 9600
+      targetPort: 9600
+      name: http
+  type: ClusterIP
+
+---
+# Kibana Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+        - name: kibana
+          image: docker.elastic.co/kibana/kibana:8.11.0
+          ports:
+            - containerPort: 5601
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: "http://elasticsearch:9200"
+
+---
+# Kibana Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+  namespace: monitoring
+spec:
+  selector:
+    app: kibana
+  ports:
+    - port: 5601
+      targetPort: 5601
+  type: ClusterIP
+
+---
+# Filebeat DaemonSet
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: filebeat
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: filebeat
+  template:
+    metadata:
+      labels:
+        app: filebeat
+    spec:
+      serviceAccountName: filebeat
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: filebeat
+          image: docker.elastic.co/beats/filebeat:8.11.0
+          args: [
+            "-c", "/etc/filebeat.yml",
+            "-e",
+          ]
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: config
+              mountPath: /etc/filebeat.yml
+              subPath: filebeat.yml
+            - name: data
+              mountPath: /usr/share/filebeat/data
+            - name: varlibdockercontainers
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+            - name: varlog
+              mountPath: /var/log
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: filebeat-config
+        - name: varlibdockercontainers
+          hostPath:
+            path: /var/lib/docker/containers
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: data
+          hostPath:
+            path: /var/lib/filebeat-data
+            type: DirectoryOrCreate
+
+---
+# PersistentVolumeClaims
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prometheus-pvc
+  namespace: monitoring
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc
+  namespace: monitoring
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
