@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Homepage -->
+  <url>
+    <loc>https://tepslab.com/</loc>
+    <lastmod>2025-11-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Courses Page -->
+  <url>
+    <loc>https://tepslab.com/courses</loc>
+    <lastmod>2025-11-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Login Page -->
+  <url>
+    <loc>https://tepslab.com/login</loc>
+    <lastmod>2025-11-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Register Page -->
+  <url>
+    <loc>https://tepslab.com/register</loc>
+    <lastmod>2025-11-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Diagnostic Tests -->
+  <url>
+    <loc>https://tepslab.com/tests</loc>
+    <lastmod>2025-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Add individual course URLs dynamically in production -->
+  <!-- Example course entries:
+  <url>
+    <loc>https://tepslab.com/courses/COURSE_ID</loc>
+    <lastmod>2025-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://tepslab.com/course-thumbnail.jpg</image:loc>
+      <image:title>Course Title</image:title>
+    </image:image>
+  </url>
+  -->
+
+</urlset>

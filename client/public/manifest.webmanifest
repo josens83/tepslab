@@ -1,0 +1,68 @@
+{
+  "name": "TEPS Lab - 프리미엄 TEPS 학습 플랫폼",
+  "short_name": "TEPS Lab",
+  "description": "점수대별 맞춤 TEPS 학습 플랫폼. 327점, 387점, 450점, 550점 목표별 커리큘럼으로 효율적인 텝스 학습을 시작하세요.",
+  "theme_color": "#0891B2",
+  "background_color": "#FFFFFF",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "learning"],
+  "shortcuts": [
+    {
+      "name": "전체 강의",
+      "short_name": "강의",
+      "description": "모든 TEPS 강의 보기",
+      "url": "/courses",
+      "icons": [
+        {
+          "src": "/icon-courses.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "내 강의",
+      "short_name": "내 강의",
+      "description": "수강 중인 강의",
+      "url": "/my-courses",
+      "icons": [
+        {
+          "src": "/icon-my-courses.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "진단 테스트",
+      "short_name": "테스트",
+      "description": "TEPS 진단 테스트",
+      "url": "/tests",
+      "icons": [
+        {
+          "src": "/icon-test.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}

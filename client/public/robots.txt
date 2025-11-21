@@ -1,0 +1,15 @@
+# TEPS Lab - robots.txt
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /profile/
+Disallow: /dashboard/
+Disallow: /checkout/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://tepslab.com/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1

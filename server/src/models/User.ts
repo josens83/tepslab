@@ -85,6 +85,8 @@ const userSchema = new Schema<IUserDocument>(
 // Index for faster queries
 userSchema.index({ email: 1 });
 userSchema.index({ provider: 1, providerId: 1 });
+userSchema.index({ role: 1 });
+userSchema.index({ createdAt: -1 });
 
 // Hash password before saving
 userSchema.pre('save', async function (next) {
