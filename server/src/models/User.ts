@@ -11,7 +11,7 @@ export interface IUserDocument extends Document {
   currentLevel?: string;
   provider: 'local' | 'kakao' | 'naver' | 'google' | 'facebook' | 'github' | 'apple';
   providerId?: string;
-  role: 'student' | 'admin';
+  role: 'student' | 'instructor' | 'admin';
   isEmailVerified: boolean;
   enrolledCourses: mongoose.Types.ObjectId[];
   twoFactorEnabled: boolean;
@@ -66,7 +66,7 @@ const userSchema = new Schema<IUserDocument>(
     },
     role: {
       type: String,
-      enum: ['student', 'admin'],
+      enum: ['student', 'instructor', 'admin'],
       default: 'student',
     },
     isEmailVerified: {
