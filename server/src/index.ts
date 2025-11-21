@@ -10,6 +10,8 @@ import userRoutes from './routes/userRoutes';
 import reviewRoutes from './routes/reviewRoutes';
 import testRoutes from './routes/testRoutes';
 import adminRoutes from './routes/adminRoutes';
+import sitemapRoutes from './routes/sitemapRoutes';
+import uploadRoutes from './routes/uploadRoutes';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 // Load environment variables
@@ -44,6 +46,11 @@ app.use('/api/users', userRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/tests', testRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/uploads', uploadRoutes);
+app.use('/api/sitemap', sitemapRoutes);
+
+// Serve uploaded files
+app.use('/uploads', express.static('uploads'));
 
 // Error handling
 app.use(notFound);

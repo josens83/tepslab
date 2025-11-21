@@ -13,6 +13,7 @@ import {
   LoadingSpinner,
   ToastContainer,
   Logo,
+  PWAInstallPrompt,
 } from './components/common';
 import { useToast } from './hooks/useToast';
 import { IoMail, IoSearch } from 'react-icons/io5';
@@ -286,6 +287,7 @@ function ComponentDemo() {
 function App() {
   return (
     <BrowserRouter>
+      <PWAInstallPrompt />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
