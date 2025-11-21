@@ -12,6 +12,7 @@ import * as Sentry from '@sentry/node';
 import { initSentry } from './config/sentry';
 import { connectDatabase } from './config/database';
 import { initRedis } from './config/redis';
+import { initOpenAI } from './config/openai';
 import { swaggerSpec, serveSwaggerJson } from './config/swagger';
 import swaggerUi from 'swagger-ui-express';
 import authRoutes from './routes/authRoutes';
@@ -26,6 +27,7 @@ import sitemapRoutes from './routes/sitemapRoutes';
 import uploadRoutes from './routes/uploadRoutes';
 import noteRoutes from './routes/noteRoutes';
 import bookmarkRoutes from './routes/bookmarkRoutes';
+import aiTutorRoutes from './routes/aiTutorRoutes';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 // Load environment variables
@@ -143,6 +145,7 @@ app.use('/api/uploads', uploadRoutes);
 app.use('/api/sitemap', sitemapRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
+app.use('/api/ai-tutor', aiTutorRoutes);
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
@@ -162,6 +165,9 @@ const startServer = async () => {
 
     // Initialize Redis (optional)
     initRedis();
+
+    // Initialize OpenAI (optional)
+    initOpenAI();
 
     // Start listening
     app.listen(PORT, () => {
