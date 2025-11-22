@@ -29,6 +29,8 @@ import uploadRoutes from './routes/uploadRoutes';
 import noteRoutes from './routes/noteRoutes';
 import bookmarkRoutes from './routes/bookmarkRoutes';
 import aiTutorRoutes from './routes/aiTutorRoutes';
+import tepsQuestionsRoutes from './routes/tepsQuestions';
+import personalizedLearningRoutes from './routes/personalizedLearning';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 // Load environment variables
@@ -148,6 +150,8 @@ app.use('/api/sitemap', sitemapRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/ai-tutor', aiTutorRoutes);
+app.use('/api/teps-questions', tepsQuestionsRoutes);
+app.use('/api/personalized-learning', personalizedLearningRoutes);
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
