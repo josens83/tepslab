@@ -9,11 +9,14 @@ export interface IUserDocument extends Document {
   birthDate?: Date;
   targetScore?: number;
   currentLevel?: string;
-  provider: 'local' | 'kakao' | 'naver';
+  provider: 'local' | 'kakao' | 'naver' | 'google' | 'facebook' | 'github' | 'apple';
   providerId?: string;
-  role: 'student' | 'admin';
+  role: 'student' | 'instructor' | 'admin';
   isEmailVerified: boolean;
   enrolledCourses: mongoose.Types.ObjectId[];
+  twoFactorEnabled: boolean;
+  twoFactorSecret?: string;
+  twoFactorBackupCodes?: string[];
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -55,7 +58,7 @@ const userSchema = new Schema<IUserDocument>(
     },
     provider: {
       type: String,
-      enum: ['local', 'kakao', 'naver'],
+      enum: ['local', 'kakao', 'naver', 'google', 'facebook', 'github', 'apple'],
       default: 'local',
     },
     providerId: {
@@ -63,7 +66,7 @@ const userSchema = new Schema<IUserDocument>(
     },
     role: {
       type: String,
-      enum: ['student', 'admin'],
+      enum: ['student', 'instructor', 'admin'],
       default: 'student',
     },
     isEmailVerified: {
@@ -76,6 +79,18 @@ const userSchema = new Schema<IUserDocument>(
         ref: 'Course',
       },
     ],
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    twoFactorSecret: {
+      type: String,
+      select: false, // Don't include in queries by default
+    },
+    twoFactorBackupCodes: {
+      type: [String],
+      select: false, // Don't include in queries by default
+    },
   },
   {
     timestamps: true,

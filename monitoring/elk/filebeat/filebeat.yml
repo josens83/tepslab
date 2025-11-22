@@ -1,0 +1,121 @@
+filebeat.inputs:
+  # Container logs from Kubernetes
+  - type: container
+    enabled: true
+    paths:
+      - /var/log/containers/*.log
+    processors:
+      - add_kubernetes_metadata:
+          host: ${NODE_NAME}
+          matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"
+
+  # System logs
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/syslog
+      - /var/log/messages
+    fields:
+      type: system
+
+  # Nginx access logs
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/nginx/access.log
+    fields:
+      type: nginx_access
+
+  # Nginx error logs
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/nginx/error.log
+    fields:
+      type: nginx_error
+
+# Autodiscover configuration for Docker/Kubernetes
+filebeat.autodiscover:
+  providers:
+    - type: kubernetes
+      node: ${NODE_NAME}
+      hints.enabled: true
+      hints.default_config:
+        type: container
+        paths:
+          - /var/log/containers/*-${data.kubernetes.container.id}.log
+
+# Modules
+filebeat.modules:
+  - module: system
+    syslog:
+      enabled: true
+    auth:
+      enabled: true
+
+  - module: nginx
+    access:
+      enabled: true
+      var.paths: ["/var/log/nginx/access.log*"]
+    error:
+      enabled: true
+      var.paths: ["/var/log/nginx/error.log*"]
+
+# Processors
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~
+
+  # Drop debug logs in production
+  - drop_event:
+      when:
+        and:
+          - equals:
+              log.level: DEBUG
+          - equals:
+              environment: production
+
+  # Decode JSON logs
+  - decode_json_fields:
+      fields: ["message"]
+      target: ""
+      overwrite_keys: true
+
+# Output to Logstash
+output.logstash:
+  hosts: ["${LOGSTASH_HOSTS:logstash:5044}"]
+  loadbalance: true
+  worker: 2
+
+# Alternatively, output directly to Elasticsearch
+# output.elasticsearch:
+#   hosts: ["${ELASTICSEARCH_HOSTS:elasticsearch:9200}"]
+#   username: "${ELASTICSEARCH_USER:elastic}"
+#   password: "${ELASTICSEARCH_PASSWORD:changeme}"
+#   index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"
+
+# Logging
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644
+
+# HTTP endpoint for health checks
+http.enabled: true
+http.host: "0.0.0.0"
+http.port: 5066
+
+# Monitoring
+monitoring.enabled: true
+monitoring.elasticsearch:
+  hosts: ["${ELASTICSEARCH_HOSTS:elasticsearch:9200}"]
+  username: "${ELASTICSEARCH_USER:elastic}"
+  password: "${ELASTICSEARCH_PASSWORD:changeme}"
