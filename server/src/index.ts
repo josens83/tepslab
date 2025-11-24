@@ -33,6 +33,7 @@ import tepsQuestionsRoutes from './routes/tepsQuestions';
 import personalizedLearningRoutes from './routes/personalizedLearning';
 import tepsExamsRoutes from './routes/tepsExams';
 import enhancedAITutorRoutes from './routes/enhancedAITutor';
+import learningAnalyticsRoutes from './routes/learningAnalytics';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 // Load environment variables
@@ -156,6 +157,7 @@ app.use('/api/teps-questions', tepsQuestionsRoutes);
 app.use('/api/personalized-learning', personalizedLearningRoutes);
 app.use('/api/teps-exams', tepsExamsRoutes);
 app.use('/api/enhanced-ai-tutor', enhancedAITutorRoutes);
+app.use('/api/learning-analytics', learningAnalyticsRoutes);
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
