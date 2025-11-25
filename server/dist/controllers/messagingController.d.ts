@@ -1,0 +1,20 @@
+import { Request, Response, NextFunction } from 'express';
+export declare const createConversation: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const getConversation: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const getUserConversations: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const addParticipant: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const removeParticipant: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const leaveConversation: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const updateGroupInfo: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const toggleMute: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const toggleArchive: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const deleteConversation: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const sendMessage: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const getMessages: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const markAsRead: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const editMessage: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const deleteMessage: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const addReaction: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const getUnreadCount: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const searchMessages: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+//# sourceMappingURL=messagingController.d.ts.map
