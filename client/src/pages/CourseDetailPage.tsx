@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '../components/layout/MainLayout';
-import { Button } from '../components/common';
+import { Button, SEO } from '../components/common';
 import { courseAPI } from '../lib/api';
 import type { Course } from '../types/course';
 import { useAuth } from '../hooks/useAuth';
 import { motion } from 'framer-motion';
+import { generateCourseSchema, generateBreadcrumbSchema } from '../utils/seo';
 import {
   IoTimeOutline,
   IoDocumentTextOutline,
@@ -149,8 +150,25 @@ export const CourseDetailPage: React.FC = () => {
     ? Math.round(((course.price - course.discountPrice) / course.price) * 100)
     : 0;
 
+  const breadcrumbs = [
+    { name: '홈', url: '/' },
+    { name: '전체 강의', url: '/courses' },
+    { name: course.title, url: `/courses/${course._id}` },
+  ];
+
+  const price = course.discountPrice || course.price;
+
   return (
     <MainLayout>
+      <SEO
+        title={course.title}
+        description={course.description}
+        keywords={`${course.title}, TEPS ${course.targetScore}점, ${categoryLabels[course.category]}, ${levelLabels[course.level]}, TEPS 강의`}
+        ogType="article"
+        ogImage={course.thumbnailUrl || '/og-course.png'}
+        canonical={`/courses/${course._id}`}
+        jsonLd={[generateCourseSchema(course), generateBreadcrumbSchema(breadcrumbs)]}
+      />
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
         {/* Back Button */}
         <div className="container mx-auto px-4 pt-8">

@@ -1,0 +1,563 @@
+// Prisma Schema for TEPS Lab
+// This schema connects to Supabase PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// =====================================================
+// ENUMS
+// =====================================================
+
+enum UserRole {
+  student
+  instructor
+  admin
+}
+
+enum UserLevel {
+  beginner
+  intermediate
+  advanced
+}
+
+enum AuthProvider {
+  local
+  kakao
+  naver
+  google
+  facebook
+  github
+  apple
+}
+
+enum CourseLevel {
+  beginner
+  intermediate
+  advanced
+}
+
+enum CourseCategory {
+  grammar
+  vocabulary
+  listening
+  reading
+  comprehensive
+}
+
+enum EnrollmentStatus {
+  active
+  completed
+  expired
+  cancelled
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+  cancelled
+  refunded
+}
+
+enum PaymentMethod {
+  card
+  transfer
+  virtualAccount
+  mobilePhone
+  giftCertificate
+  easyPay
+}
+
+enum TepsSection {
+  listening
+  vocabulary
+  grammar
+  reading
+}
+
+enum ExamType {
+  official_simulation
+  section_practice
+  micro_learning
+  adaptive_test
+  mock_test
+}
+
+enum ExamDifficulty {
+  beginner
+  intermediate
+  advanced
+  expert
+  adaptive
+}
+
+enum ExamStatus {
+  not_started
+  in_progress
+  paused
+  completed
+  abandoned
+  expired
+}
+
+enum ReviewStatus {
+  pending
+  approved
+  rejected
+  needs_revision
+}
+
+// =====================================================
+// MODELS
+// =====================================================
+
+model Profile {
+  id                    String    @id @db.Uuid
+  email                 String    @unique
+  name                  String
+  phone                 String?
+  birthDate             DateTime? @map("birth_date") @db.Date
+  targetScore           Int?      @map("target_score")
+  currentLevel          UserLevel? @map("current_level")
+  provider              AuthProvider @default(local)
+  providerId            String?   @map("provider_id")
+  role                  UserRole  @default(student)
+  isEmailVerified       Boolean   @default(false) @map("is_email_verified")
+  twoFactorEnabled      Boolean   @default(false) @map("two_factor_enabled")
+  twoFactorSecret       String?   @map("two_factor_secret")
+  twoFactorBackupCodes  String[]  @map("two_factor_backup_codes")
+  avatarUrl             String?   @map("avatar_url")
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  enrollments           Enrollment[]
+  payments              Payment[]
+  examAttempts          TepsExamAttempt[]
+  forumPosts            ForumPost[]
+  forumComments         ForumComment[]
+  sentMessages          Message[]
+  userLevel             UserLevelData?
+  learningProfile       UserLearningProfile?
+  aiTutorSessions       AiTutorSession[]
+  reviews               Review[]
+  bookmarks             Bookmark[]
+  reviewedQuestions     TepsQuestion[] @relation("ReviewedBy")
+
+  @@map("profiles")
+}
+
+model Course {
+  id              String         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  title           String
+  description     String
+  instructorId    String?        @map("instructor_id") @db.Uuid
+  instructorName  String         @map("instructor_name")
+  thumbnailUrl    String?        @map("thumbnail_url")
+  targetScore     Int            @map("target_score")
+  level           CourseLevel
+  category        CourseCategory
+  price           Int
+  discountPrice   Int?           @map("discount_price")
+  duration        Int
+  lessons         Json           @default("[]")
+  lessonsCount    Int            @default(0) @map("lessons_count")
+  features        String[]       @default([])
+  curriculum      String[]       @default([])
+  requirements    String[]       @default([])
+  isPublished     Boolean        @default(false) @map("is_published")
+  isFeatured      Boolean        @default(false) @map("is_featured")
+  enrolledCount   Int            @default(0) @map("enrolled_count")
+  rating          Decimal        @default(0) @db.Decimal(2, 1)
+  reviewsCount    Int            @default(0) @map("reviews_count")
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  enrollments     Enrollment[]
+  payments        Payment[]
+  reviews         Review[]
+  bookmarks       Bookmark[]
+
+  @@index([targetScore])
+  @@index([level])
+  @@index([category])
+  @@index([isPublished])
+  @@index([isFeatured])
+  @@index([rating(sort: Desc)])
+  @@map("courses")
+}
+
+model Enrollment {
+  id                   String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId               String           @map("user_id") @db.Uuid
+  courseId             String           @map("course_id") @db.Uuid
+  enrolledAt           DateTime         @default(now()) @map("enrolled_at") @db.Timestamptz
+  expiresAt            DateTime?        @map("expires_at") @db.Timestamptz
+  status               EnrollmentStatus @default(active)
+  progress             Json             @default("[]")
+  completionPercentage Int              @default(0) @map("completion_percentage")
+  lastAccessedAt       DateTime         @default(now()) @map("last_accessed_at") @db.Timestamptz
+  paymentId            String?          @map("payment_id")
+  createdAt            DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime         @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  user   Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+  @@index([status])
+  @@map("enrollments")
+}
+
+model Payment {
+  id           String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId       String        @map("user_id") @db.Uuid
+  courseId     String        @map("course_id") @db.Uuid
+  orderId      String        @unique @map("order_id")
+  paymentKey   String?       @map("payment_key")
+  amount       Int
+  status       PaymentStatus @default(pending)
+  method       PaymentMethod?
+  requestedAt  DateTime      @default(now()) @map("requested_at") @db.Timestamptz
+  approvedAt   DateTime?     @map("approved_at") @db.Timestamptz
+  cancelledAt  DateTime?     @map("cancelled_at") @db.Timestamptz
+  refundedAt   DateTime?     @map("refunded_at") @db.Timestamptz
+  failReason   String?       @map("fail_reason")
+  cancelReason String?       @map("cancel_reason")
+  refundReason String?       @map("refund_reason")
+  receiptUrl   String?       @map("receipt_url")
+  metadata     Json?
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  user   Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([orderId])
+  @@index([status])
+  @@map("payments")
+}
+
+model TepsQuestion {
+  id                     String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  questionType           String       @map("question_type")
+  section                TepsSection
+  difficultyLevel        Int          @map("difficulty_level")
+  questionText           String       @map("question_text")
+  options                Json
+  correctAnswer          String       @map("correct_answer") @db.Char(1)
+  audioResource          Json?        @map("audio_resource")
+  readingPassage         Json?        @map("reading_passage")
+  imageUrl               String?      @map("image_url")
+  explanation            String
+  keyPoints              String[]     @default([]) @map("key_points")
+  relatedConcepts        String[]     @default([]) @map("related_concepts")
+  tips                   String[]     @default([])
+  topic                  String
+  subtopic               String?
+  tags                   String[]     @default([])
+  keywords               String[]     @default([])
+  isOfficialQuestion     Boolean      @default(false) @map("is_official_question")
+  examYear               Int?         @map("exam_year")
+  examMonth              Int?         @map("exam_month")
+  officialQuestionNumber Int?         @map("official_question_number")
+  statistics             Json         @default("{}")
+  prerequisiteKnowledge  String[]     @default([]) @map("prerequisite_knowledge")
+  learningObjectives     String[]     @default([]) @map("learning_objectives")
+  reviewStatus           ReviewStatus @default(pending) @map("review_status")
+  reviewedById           String?      @map("reviewed_by") @db.Uuid
+  reviewedAt             DateTime?    @map("reviewed_at") @db.Timestamptz
+  qualityScore           Int          @default(0) @map("quality_score")
+  isAiGenerated          Boolean      @default(false) @map("is_ai_generated")
+  generationMethod       String?      @map("generation_method")
+  generatedAt            DateTime?    @map("generated_at") @db.Timestamptz
+  createdAt              DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt              DateTime     @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  reviewedBy Profile?   @relation("ReviewedBy", fields: [reviewedById], references: [id])
+  bookmarks  Bookmark[]
+
+  @@index([section])
+  @@index([difficultyLevel])
+  @@index([topic])
+  @@index([reviewStatus])
+  @@map("teps_questions")
+}
+
+model TepsExamConfig {
+  id                   String         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name                 String
+  description          String?
+  examType             ExamType       @map("exam_type")
+  difficulty           ExamDifficulty
+  totalTimeLimit       Int            @map("total_time_limit")
+  timePerSection       Boolean        @default(false) @map("time_per_section")
+  allowPause           Boolean        @default(true) @map("allow_pause")
+  maxPauseDuration     Int?           @map("max_pause_duration")
+  sections             Json           @default("[]")
+  allowReview          Boolean        @default(true) @map("allow_review")
+  shuffleQuestions     Boolean        @default(false) @map("shuffle_questions")
+  shuffleOptions       Boolean        @default(false) @map("shuffle_options")
+  showTimer            Boolean        @default(true) @map("show_timer")
+  autoSubmit           Boolean        @default(true) @map("auto_submit")
+  showScoreImmediately Boolean        @default(true) @map("show_score_immediately")
+  showCorrectAnswers   Boolean        @default(true) @map("show_correct_answers")
+  showExplanations     Boolean        @default(true) @map("show_explanations")
+  isOfficialFormat     Boolean        @default(false) @map("is_official_format")
+  examDate             DateTime?      @map("exam_date") @db.Timestamptz
+  isActive             Boolean        @default(true) @map("is_active")
+  createdAt            DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime       @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  examAttempts TepsExamAttempt[]
+
+  @@map("teps_exam_configs")
+}
+
+model TepsExamAttempt {
+  id                   String         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId               String         @map("user_id") @db.Uuid
+  examConfigId         String         @map("exam_config_id") @db.Uuid
+  examType             ExamType       @map("exam_type")
+  difficulty           ExamDifficulty
+  status               ExamStatus     @default(not_started)
+  startedAt            DateTime?      @map("started_at") @db.Timestamptz
+  completedAt          DateTime?      @map("completed_at") @db.Timestamptz
+  pausedAt             DateTime?      @map("paused_at") @db.Timestamptz
+  totalPausedTime      Int            @default(0) @map("total_paused_time")
+  expiresAt            DateTime?      @map("expires_at") @db.Timestamptz
+  answers              Json           @default("[]")
+  currentQuestionIndex Int            @default(0) @map("current_question_index")
+  currentSection       TepsSection?   @map("current_section")
+  result               Json?
+  ipAddress            String?        @map("ip_address") @db.Inet
+  userAgent            String?        @map("user_agent")
+  deviceType           String         @default("desktop") @map("device_type")
+  tabSwitches          Int            @default(0) @map("tab_switches")
+  fullscreenExits      Int            @default(0) @map("fullscreen_exits")
+  suspiciousActivity   Boolean        @default(false) @map("suspicious_activity")
+  proctoring           Json?
+  createdAt            DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime       @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  user       Profile        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  examConfig TepsExamConfig @relation(fields: [examConfigId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([examType])
+  @@map("teps_exam_attempts")
+}
+
+model ForumPost {
+  id               String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  authorId         String    @map("author_id") @db.Uuid
+  title            String
+  content          String
+  category         String
+  tags             String[]  @default([])
+  viewsCount       Int       @default(0) @map("views_count")
+  upvotes          String[]  @default([]) @db.Uuid
+  downvotes        String[]  @default([]) @db.Uuid
+  isPinned         Boolean   @default(false) @map("is_pinned")
+  isLocked         Boolean   @default(false) @map("is_locked")
+  isAnswered       Boolean   @default(false) @map("is_answered")
+  acceptedAnswerId String?   @map("accepted_answer_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  author   Profile        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments ForumComment[]
+
+  @@map("forum_posts")
+}
+
+model ForumComment {
+  id         String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  postId     String   @map("post_id") @db.Uuid
+  authorId   String   @map("author_id") @db.Uuid
+  parentId   String?  @map("parent_id") @db.Uuid
+  content    String
+  upvotes    String[] @default([]) @db.Uuid
+  downvotes  String[] @default([]) @db.Uuid
+  isAccepted Boolean  @default(false) @map("is_accepted")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  post     ForumPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author   Profile        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent   ForumComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  ForumComment[] @relation("CommentReplies")
+
+  @@map("forum_comments")
+}
+
+model Conversation {
+  id            String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  participants  String[]  @db.Uuid
+  lastMessageAt DateTime  @default(now()) @map("last_message_at") @db.Timestamptz
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  messages Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  conversationId String   @map("conversation_id") @db.Uuid
+  senderId       String   @map("sender_id") @db.Uuid
+  content        String
+  messageType    String   @default("text") @map("message_type")
+  attachments    Json     @default("[]")
+  readBy         String[] @default([]) @map("read_by") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       Profile      @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model UserLevelData {
+  id               String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId           String    @unique @map("user_id") @db.Uuid
+  level            Int       @default(1)
+  currentXp        Int       @default(0) @map("current_xp")
+  totalXp          Int       @default(0) @map("total_xp")
+  coins            Int       @default(0)
+  streakDays       Int       @default(0) @map("streak_days")
+  lastActivityDate DateTime? @map("last_activity_date") @db.Date
+  achievements     Json      @default("[]")
+  badges           Json      @default("[]")
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_levels")
+}
+
+model StudyGroup {
+  id                String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name              String
+  description       String?
+  ownerId           String   @map("owner_id") @db.Uuid
+  targetScore       Int?     @map("target_score")
+  maxMembers        Int      @default(10) @map("max_members")
+  isPublic          Boolean  @default(true) @map("is_public")
+  members           Json     @default("[]")
+  scheduledSessions Json     @default("[]") @map("scheduled_sessions")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("study_groups")
+}
+
+model LearningPartnership {
+  id            String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  partner1Id    String   @map("partner1_id") @db.Uuid
+  partner2Id    String   @map("partner2_id") @db.Uuid
+  status        String   @default("pending")
+  matchedAt     DateTime? @map("matched_at") @db.Timestamptz
+  progress      Json     @default("{}")
+  studySessions Json     @default("[]") @map("study_sessions")
+  feedback      Json     @default("[]")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("learning_partnerships")
+}
+
+model AiTutorSession {
+  id          String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  sessionType String    @map("session_type")
+  context     Json      @default("{}")
+  messages    Json      @default("[]")
+  isActive    Boolean   @default(true) @map("is_active")
+  startedAt   DateTime  @default(now()) @map("started_at") @db.Timestamptz
+  endedAt     DateTime? @map("ended_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ai_tutor_sessions")
+}
+
+model Review {
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  courseId  String   @map("course_id") @db.Uuid
+  rating    Int
+  content   String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  user   Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("reviews")
+}
+
+model Bookmark {
+  id         String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  questionId String?  @map("question_id") @db.Uuid
+  courseId   String?  @map("course_id") @db.Uuid
+  note       String?
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relations
+  user     Profile       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question TepsQuestion? @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  course   Course?       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("bookmarks")
+}
+
+model UserLearningProfile {
+  id                 String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId             String   @unique @map("user_id") @db.Uuid
+  estimatedAbility   Decimal  @default(0) @map("estimated_ability") @db.Decimal(4, 2)
+  weakTopics         Json     @default("[]") @map("weak_topics")
+  strongTopics       Json     @default("[]") @map("strong_topics")
+  learningStyle      String?  @map("learning_style")
+  studyPreferences   Json     @default("{}") @map("study_preferences")
+  goalSettings       Json     @default("{}") @map("goal_settings")
+  performanceHistory Json     @default("[]") @map("performance_history")
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_learning_profiles")
+}

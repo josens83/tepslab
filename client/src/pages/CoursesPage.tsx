@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { MainLayout } from '../components/layout/MainLayout';
 import { CourseCard, CourseFilters } from '../components/course';
+import { SEO } from '../components/common';
 import { courseAPI } from '../lib/api';
 import type { Course, CourseFilters as Filters } from '../types/course';
 import { IoChevronBack, IoChevronForward } from 'react-icons/io5';
 import { motion } from 'framer-motion';
+import { generateBreadcrumbSchema } from '../utils/seo';
 
 const COURSES_PER_PAGE = 12;
 
@@ -70,8 +72,20 @@ export const CoursesPage: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const breadcrumbs = [
+    { name: '홈', url: '/' },
+    { name: '전체 강의', url: '/courses' },
+  ];
+
   return (
     <MainLayout>
+      <SEO
+        title="전체 강의"
+        description={`TEPS Lab의 모든 강의를 확인하세요. 문법, 어휘, 청취, 독해 영역별 강의와 점수대별 맞춤 과정을 제공합니다. 현재 ${totalCourses}개의 강의가 있습니다.`}
+        keywords="TEPS 강의, 텝스 강의 목록, 문법 강의, 어휘 강의, 청취 강의, 독해 강의, 327점, 387점, 450점, 550점"
+        canonical="/courses"
+        jsonLd={generateBreadcrumbSchema(breadcrumbs)}
+      />
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4 py-12">
           {/* Header */}

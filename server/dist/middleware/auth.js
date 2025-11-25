@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requireAdmin = exports.authorize = exports.authenticate = void 0;
+exports.auth = exports.requireAdmin = exports.authorize = exports.authenticate = void 0;
 const jwt_1 = require("../utils/jwt");
 const User_1 = require("../models/User");
 const authenticate = async (req, res, next) => {
@@ -85,4 +85,6 @@ const requireAdmin = (req, res, next) => {
     next();
 };
 exports.requireAdmin = requireAdmin;
+// Alias for authenticate
+exports.auth = exports.authenticate;
 //# sourceMappingURL=auth.js.map

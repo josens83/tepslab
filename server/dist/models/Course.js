@@ -149,6 +149,13 @@ courseSchema.index({ isPublished: 1 });
 courseSchema.index({ isFeatured: 1 });
 courseSchema.index({ price: 1 });
 courseSchema.index({ title: 'text', description: 'text' }); // Text search
+courseSchema.index({ rating: -1 }); // For sorting by rating
+courseSchema.index({ enrolledCount: -1 }); // For popular courses
+courseSchema.index({ createdAt: -1 }); // For latest courses
+// Composite indexes for common queries
+courseSchema.index({ isPublished: 1, isFeatured: 1 });
+courseSchema.index({ isPublished: 1, targetScore: 1 });
+courseSchema.index({ isPublished: 1, category: 1, level: 1 });
 // Update lessonsCount before saving
 courseSchema.pre('save', function (next) {
     this.lessonsCount = this.lessons.length;

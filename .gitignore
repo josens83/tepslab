@@ -1,7 +1,10 @@
 # Root level gitignore
 node_modules/
-package-lock.json
-package.json
+**/package-lock.json
+
+# Allow client and server package.json
+!client/package.json
+!server/package.json
 
 # Environment files
 .env

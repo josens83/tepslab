@@ -42,4 +42,46 @@ export declare const naverAuth: (_req: Request, res: Response) => void;
  * @access  Public
  */
 export declare const naverCallback: (req: Request, res: Response) => Promise<void>;
+/**
+ * @route   GET /api/auth/google
+ * @desc    Redirect to Google OAuth
+ * @access  Public
+ */
+export declare const googleAuth: (_req: Request, res: Response) => void;
+/**
+ * @route   GET /api/auth/google/callback
+ * @desc    Google OAuth callback
+ * @access  Public
+ */
+export declare const googleCallback: (req: Request, res: Response) => Promise<void>;
+/**
+ * @route   GET /api/auth/facebook
+ * @desc    Redirect to Facebook OAuth
+ * @access  Public
+ */
+export declare const facebookAuth: (_req: Request, res: Response) => void;
+/**
+ * @route   GET /api/auth/facebook/callback
+ * @desc    Facebook OAuth callback
+ * @access  Public
+ */
+export declare const facebookCallback: (req: Request, res: Response) => Promise<void>;
+/**
+ * @route   GET /api/auth/github
+ * @desc    Redirect to GitHub OAuth
+ * @access  Public
+ */
+export declare const githubAuth: (_req: Request, res: Response) => void;
+/**
+ * @route   GET /api/auth/github/callback
+ * @desc    GitHub OAuth callback
+ * @access  Public
+ */
+export declare const githubCallback: (req: Request, res: Response) => Promise<void>;
+/**
+ * @route   POST /api/auth/apple
+ * @desc    Apple Sign In
+ * @access  Public
+ */
+export declare const appleAuth: (req: Request, res: Response) => Promise<void>;
 //# sourceMappingURL=authController.d.ts.map

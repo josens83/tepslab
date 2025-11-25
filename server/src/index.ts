@@ -3,7 +3,12 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { connectDatabase } from './config/database';
+import { initRedis } from './config/redis';
+import { initOpenAI } from './config/openai';
+import { swaggerSpec, serveSwaggerJson } from './config/swagger';
+import swaggerUi from 'swagger-ui-express';
 import authRoutes from './routes/authRoutes';
+import twoFactorRoutes from './routes/twoFactorRoutes';
 import courseRoutes from './routes/courseRoutes';
 import enrollmentRoutes from './routes/enrollmentRoutes';
 import paymentRoutes from './routes/paymentRoutes';
@@ -17,16 +22,88 @@ import { errorHandler, notFound } from './middleware/errorHandler';
 // Load environment variables
 dotenv.config();
 
+// Initialize Sentry
+initSentry();
+
 const app: Application = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// Sentry request handler
+// Note: In newer Sentry SDK versions, use Sentry.setupExpressErrorHandler(app) after all routes
+
+// Security Middleware
+// Set security HTTP headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://js.tosspayments.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:", "http:"],
+      connectSrc: ["'self'", "https://api.tosspayments.com"],
+      frameSrc: ["'self'", "https://js.tosspayments.com"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+}));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply rate limiting to API routes
+app.use('/api/', limiter);
+
+// Stricter rate limit for auth routes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // 10 requests
+  message: 'Too many authentication attempts, please try again later.',
+  skipSuccessfulRequests: true,
+});
+
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+// Data sanitization against XSS
+app.use(xss());
+
+// Prevent parameter pollution
+app.use(hpp({
+  whitelist: [
+    'targetScore',
+    'level',
+    'category',
+    'price',
+    'rating',
+    'sort',
+  ],
+}));
+
+// Enable CORS
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
   credentials: true,
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Compression middleware
+app.use(compression());
+
+// Body parser
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Cookie parser
+app.use(cookieParser());
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
@@ -40,8 +117,16 @@ app.get('/health', (_req, res) => {
   });
 });
 
+// API Documentation
+app.get('/api-docs/swagger.json', serveSwaggerJson);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'TEPS Lab API Docs',
+}));
+
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/auth/2fa', twoFactorRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/payments', paymentRoutes);
@@ -60,6 +145,12 @@ const startServer = async () => {
   try {
     // Connect to database
     await connectDatabase();
+
+    // Initialize Redis (optional)
+    initRedis();
+
+    // Initialize OpenAI (optional)
+    initOpenAI();
 
     // Start listening
     app.listen(PORT, () => {

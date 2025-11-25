@@ -18,3 +18,7 @@ export { Logo } from './Logo';
 export { default as LogoDefault } from './Logo';
 
 export { ProtectedRoute } from './ProtectedRoute';
+
+export { default as SEO } from './SEO';
+
+export { default as PWAInstallPrompt } from './PWAInstallPrompt';
