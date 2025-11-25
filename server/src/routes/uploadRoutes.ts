@@ -1,28 +1,52 @@
-import { Router, Request, Response } from 'express';
-import { authenticate } from '../middleware/auth';
+import { Router } from 'express';
+import {
+  uploadImage,
+  uploadMultipleImages,
+  uploadVideo,
+  deleteFile,
+  uploadAvatar,
+} from '../controllers/uploadController';
+import { authenticate, requireAdmin } from '../middleware/auth';
+import { imageUpload, videoUpload } from '../config/upload';
 
 const router = Router();
 
-// Placeholder upload routes
-router.post('/image', authenticate, (req: Request, res: Response) => {
-  res.status(501).json({
-    success: false,
-    message: 'File upload not yet implemented',
-  });
-});
+// All upload routes require authentication
+router.use(authenticate);
 
-router.post('/video', authenticate, (req: Request, res: Response) => {
-  res.status(501).json({
-    success: false,
-    message: 'Video upload not yet implemented',
-  });
-});
+/**
+ * @route   POST /api/uploads/image
+ * @desc    Upload single image
+ * @access  Private
+ */
+router.post('/image', imageUpload.single('image'), uploadImage);
 
-router.delete('/:filename', authenticate, (req: Request, res: Response) => {
-  res.status(501).json({
-    success: false,
-    message: 'File deletion not yet implemented',
-  });
-});
+/**
+ * @route   POST /api/uploads/images
+ * @desc    Upload multiple images (max 10)
+ * @access  Private
+ */
+router.post('/images', imageUpload.array('images', 10), uploadMultipleImages);
+
+/**
+ * @route   POST /api/uploads/video
+ * @desc    Upload video (admin only for course videos)
+ * @access  Admin
+ */
+router.post('/video', requireAdmin, videoUpload.single('video'), uploadVideo);
+
+/**
+ * @route   POST /api/uploads/avatar
+ * @desc    Upload user avatar
+ * @access  Private
+ */
+router.post('/avatar', imageUpload.single('avatar'), uploadAvatar);
+
+/**
+ * @route   DELETE /api/uploads/:filename
+ * @desc    Delete uploaded file
+ * @access  Private
+ */
+router.delete('/:filename', deleteFile);
 
 export default router;

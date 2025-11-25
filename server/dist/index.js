@@ -39,15 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const helmet_1 = __importDefault(require("helmet"));
-const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
-const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize"));
-const xss_clean_1 = __importDefault(require("xss-clean"));
-const hpp_1 = __importDefault(require("hpp"));
-const compression_1 = __importDefault(require("compression"));
-const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const Sentry = __importStar(require("@sentry/node"));
-const sentry_1 = require("./config/sentry");
+const path_1 = __importDefault(require("path"));
 const database_1 = require("./config/database");
 const redis_1 = require("./config/redis");
 const openai_1 = require("./config/openai");
@@ -62,21 +54,7 @@ const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const reviewRoutes_1 = __importDefault(require("./routes/reviewRoutes"));
 const testRoutes_1 = __importDefault(require("./routes/testRoutes"));
 const adminRoutes_1 = __importDefault(require("./routes/adminRoutes"));
-const sitemapRoutes_1 = __importDefault(require("./routes/sitemapRoutes"));
 const uploadRoutes_1 = __importDefault(require("./routes/uploadRoutes"));
-const noteRoutes_1 = __importDefault(require("./routes/noteRoutes"));
-const bookmarkRoutes_1 = __importDefault(require("./routes/bookmarkRoutes"));
-const aiTutorRoutes_1 = __importDefault(require("./routes/aiTutorRoutes"));
-const tepsQuestions_1 = __importDefault(require("./routes/tepsQuestions"));
-const personalizedLearning_1 = __importDefault(require("./routes/personalizedLearning"));
-const tepsExams_1 = __importDefault(require("./routes/tepsExams"));
-const enhancedAITutor_1 = __importDefault(require("./routes/enhancedAITutor"));
-const learningAnalytics_1 = __importDefault(require("./routes/learningAnalytics"));
-const studyGroup_1 = __importDefault(require("./routes/studyGroup"));
-const forum_1 = __importDefault(require("./routes/forum"));
-const messaging_1 = __importDefault(require("./routes/messaging"));
-const partnerMatching_1 = __importDefault(require("./routes/partnerMatching"));
-const gamification_1 = __importDefault(require("./routes/gamification"));
 const errorHandler_1 = require("./middleware/errorHandler");
 // Load environment variables
 dotenv_1.default.config();
@@ -141,13 +119,10 @@ app.use((0, cors_1.default)({
     origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
     credentials: true,
 }));
-// Compression middleware
-app.use((0, compression_1.default)());
-// Body parser
-app.use(express_1.default.json({ limit: '10mb' }));
-app.use(express_1.default.urlencoded({ extended: true, limit: '10mb' }));
-// Cookie parser
-app.use((0, cookie_parser_1.default)());
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: true }));
+// Serve static files from uploads directory
+app.use('/uploads', express_1.default.static(path_1.default.join(process.cwd(), 'uploads')));
 // Health check route
 app.get('/health', (_req, res) => {
     res.json({
@@ -173,26 +148,6 @@ app.use('/api/reviews', reviewRoutes_1.default);
 app.use('/api/tests', testRoutes_1.default);
 app.use('/api/admin', adminRoutes_1.default);
 app.use('/api/uploads', uploadRoutes_1.default);
-app.use('/api/sitemap', sitemapRoutes_1.default);
-app.use('/api/notes', noteRoutes_1.default);
-app.use('/api/bookmarks', bookmarkRoutes_1.default);
-app.use('/api/ai-tutor', aiTutorRoutes_1.default);
-app.use('/api/teps-questions', tepsQuestions_1.default);
-app.use('/api/personalized-learning', personalizedLearning_1.default);
-app.use('/api/teps-exams', tepsExams_1.default);
-app.use('/api/enhanced-ai-tutor', enhancedAITutor_1.default);
-app.use('/api/learning-analytics', learningAnalytics_1.default);
-// Phase 5-1: Social Learning & Community Features
-app.use('/api/study-groups', studyGroup_1.default);
-app.use('/api/forum', forum_1.default);
-app.use('/api/messaging', messaging_1.default);
-app.use('/api/partner-matching', partnerMatching_1.default);
-// Phase 5-2: Gamification & Engagement System
-app.use('/api/gamification', gamification_1.default);
-// Serve uploaded files
-app.use('/uploads', express_1.default.static('uploads'));
-// Sentry error handler (using newer API)
-Sentry.setupExpressErrorHandler(app);
 // Error handling
 app.use(errorHandler_1.notFound);
 app.use(errorHandler_1.errorHandler);
@@ -268,6 +223,15 @@ const startServer = async () => {
             console.log('   GET  /api/admin/users');
             console.log('   PUT  /api/admin/users/:id/status');
             console.log('   GET  /api/admin/courses');
+            console.log('   GET  /api/admin/payments');
+            console.log('   POST /api/admin/payments/:id/refund');
+            console.log('');
+            console.log('   Uploads:');
+            console.log('   POST /api/uploads/image');
+            console.log('   POST /api/uploads/images');
+            console.log('   POST /api/uploads/video (Admin)');
+            console.log('   POST /api/uploads/avatar');
+            console.log('   DELETE /api/uploads/:filename');
             console.log('');
         });
     }

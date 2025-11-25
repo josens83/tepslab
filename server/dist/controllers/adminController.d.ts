@@ -20,4 +20,14 @@ export declare const updateUserStatus: (req: AuthRequest, res: Response) => Prom
  * GET /api/admin/courses
  */
 export declare const getAdminCourses: (req: AuthRequest, res: Response) => Promise<void>;
+/**
+ * 결제 내역 조회 (관리자용)
+ * GET /api/admin/payments
+ */
+export declare const getAdminPayments: (req: AuthRequest, res: Response) => Promise<void>;
+/**
+ * 결제 환불 처리 (관리자용)
+ * POST /api/admin/payments/:id/refund
+ */
+export declare const refundPayment: (req: AuthRequest, res: Response) => Promise<void>;
 //# sourceMappingURL=adminController.d.ts.map

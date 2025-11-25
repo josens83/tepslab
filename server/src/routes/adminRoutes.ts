@@ -4,6 +4,8 @@ import {
   getUsers,
   updateUserStatus,
   getAdminCourses,
+  getAdminPayments,
+  refundPayment,
 } from '../controllers/adminController';
 import { authenticate, requireAdmin } from '../middleware/auth';
 
@@ -40,5 +42,19 @@ router.put('/users/:id/status', updateUserStatus);
  * @access  Admin
  */
 router.get('/courses', getAdminCourses);
+
+/**
+ * @route   GET /api/admin/payments
+ * @desc    Get all payments (admin view)
+ * @access  Admin
+ */
+router.get('/payments', getAdminPayments);
+
+/**
+ * @route   POST /api/admin/payments/:id/refund
+ * @desc    Refund a payment
+ * @access  Admin
+ */
+router.post('/payments/:id/refund', refundPayment);
 
 export default router;

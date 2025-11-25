@@ -31,5 +31,17 @@ router.put('/users/:id/status', adminController_1.updateUserStatus);
  * @access  Admin
  */
 router.get('/courses', adminController_1.getAdminCourses);
+/**
+ * @route   GET /api/admin/payments
+ * @desc    Get all payments (admin view)
+ * @access  Admin
+ */
+router.get('/payments', adminController_1.getAdminPayments);
+/**
+ * @route   POST /api/admin/payments/:id/refund
+ * @desc    Refund a payment
+ * @access  Admin
+ */
+router.post('/payments/:id/refund', adminController_1.refundPayment);
 exports.default = router;
 //# sourceMappingURL=adminRoutes.js.map

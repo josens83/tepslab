@@ -1,15 +1,7 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import mongoSanitize from 'express-mongo-sanitize';
-import xss from 'xss-clean';
-import hpp from 'hpp';
-import compression from 'compression';
-import cookieParser from 'cookie-parser';
-import * as Sentry from '@sentry/node';
-import { initSentry } from './config/sentry';
+import path from 'path';
 import { connectDatabase } from './config/database';
 import { initRedis } from './config/redis';
 import { initOpenAI } from './config/openai';
@@ -24,22 +16,7 @@ import userRoutes from './routes/userRoutes';
 import reviewRoutes from './routes/reviewRoutes';
 import testRoutes from './routes/testRoutes';
 import adminRoutes from './routes/adminRoutes';
-import sitemapRoutes from './routes/sitemapRoutes';
 import uploadRoutes from './routes/uploadRoutes';
-import noteRoutes from './routes/noteRoutes';
-import bookmarkRoutes from './routes/bookmarkRoutes';
-import aiTutorRoutes from './routes/aiTutorRoutes';
-import tepsQuestionsRoutes from './routes/tepsQuestions';
-import personalizedLearningRoutes from './routes/personalizedLearning';
-import tepsExamsRoutes from './routes/tepsExams';
-import enhancedAITutorRoutes from './routes/enhancedAITutor';
-import learningAnalyticsRoutes from './routes/learningAnalytics';
-import studyGroupRoutes from './routes/studyGroup';
-import forumRoutes from './routes/forum';
-import messagingRoutes from './routes/messaging';
-import partnerMatchingRoutes from './routes/partnerMatching';
-import gamificationRoutes from './routes/gamification';
-import advancedAIRoutes from './routes/advancedAI';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 // Load environment variables
@@ -128,6 +105,9 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Cookie parser
 app.use(cookieParser());
 
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
 // Health check route
 app.get('/health', (_req, res) => {
   res.json({
@@ -155,33 +135,6 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/tests', testRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/uploads', uploadRoutes);
-app.use('/api/sitemap', sitemapRoutes);
-app.use('/api/notes', noteRoutes);
-app.use('/api/bookmarks', bookmarkRoutes);
-app.use('/api/ai-tutor', aiTutorRoutes);
-app.use('/api/teps-questions', tepsQuestionsRoutes);
-app.use('/api/personalized-learning', personalizedLearningRoutes);
-app.use('/api/teps-exams', tepsExamsRoutes);
-app.use('/api/enhanced-ai-tutor', enhancedAITutorRoutes);
-app.use('/api/learning-analytics', learningAnalyticsRoutes);
-
-// Phase 5-1: Social Learning & Community Features
-app.use('/api/study-groups', studyGroupRoutes);
-app.use('/api/forum', forumRoutes);
-app.use('/api/messaging', messagingRoutes);
-app.use('/api/partner-matching', partnerMatchingRoutes);
-
-// Phase 5-2: Gamification & Engagement System
-app.use('/api/gamification', gamificationRoutes);
-
-// Phase 5-3: Advanced AI Features
-app.use('/api/advanced-ai', advancedAIRoutes);
-
-// Serve uploaded files
-app.use('/uploads', express.static('uploads'));
-
-// Sentry error handler (using newer API)
-Sentry.setupExpressErrorHandler(app);
 
 // Error handling
 app.use(notFound);
@@ -262,6 +215,15 @@ const startServer = async () => {
       console.log('   GET  /api/admin/users');
       console.log('   PUT  /api/admin/users/:id/status');
       console.log('   GET  /api/admin/courses');
+      console.log('   GET  /api/admin/payments');
+      console.log('   POST /api/admin/payments/:id/refund');
+      console.log('');
+      console.log('   Uploads:');
+      console.log('   POST /api/uploads/image');
+      console.log('   POST /api/uploads/images');
+      console.log('   POST /api/uploads/video (Admin)');
+      console.log('   POST /api/uploads/avatar');
+      console.log('   DELETE /api/uploads/:filename');
       console.log('');
     });
   } catch (error) {
