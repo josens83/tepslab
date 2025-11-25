@@ -34,6 +34,10 @@ import personalizedLearningRoutes from './routes/personalizedLearning';
 import tepsExamsRoutes from './routes/tepsExams';
 import enhancedAITutorRoutes from './routes/enhancedAITutor';
 import learningAnalyticsRoutes from './routes/learningAnalytics';
+import studyGroupRoutes from './routes/studyGroup';
+import forumRoutes from './routes/forum';
+import messagingRoutes from './routes/messaging';
+import partnerMatchingRoutes from './routes/partnerMatching';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 // Load environment variables
@@ -158,6 +162,12 @@ app.use('/api/personalized-learning', personalizedLearningRoutes);
 app.use('/api/teps-exams', tepsExamsRoutes);
 app.use('/api/enhanced-ai-tutor', enhancedAITutorRoutes);
 app.use('/api/learning-analytics', learningAnalyticsRoutes);
+
+// Phase 5-1: Social Learning & Community Features
+app.use('/api/study-groups', studyGroupRoutes);
+app.use('/api/forum', forumRoutes);
+app.use('/api/messaging', messagingRoutes);
+app.use('/api/partner-matching', partnerMatchingRoutes);
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
