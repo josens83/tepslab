@@ -1,4 +1,5 @@
-import { onCLS, onFID, onFCP, onLCP, onTTFB, onINP, Metric } from 'web-vitals';
+import { onCLS, onFCP, onLCP, onTTFB, onINP } from 'web-vitals';
+import type { Metric } from 'web-vitals';
 import { trackEvent } from './analytics';
 
 /**
@@ -15,13 +16,12 @@ function getConnectionSpeed() {
 
 function sendToAnalytics(metric: Metric) {
   // Send to Google Analytics
-  trackEvent({
-    category: 'Web Vitals',
-    action: metric.name,
-    value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
-    label: metric.id,
-    nonInteraction: true,
-  });
+  trackEvent(
+    'Web Vitals',
+    metric.name,
+    metric.id,
+    Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value)
+  );
 
   // Log in development
   if (import.meta.env.DEV) {
@@ -62,10 +62,6 @@ export function initWebVitals() {
   // Good: < 0.1, Needs Improvement: 0.1 - 0.25, Poor: > 0.25
   onCLS(sendToAnalytics);
 
-  // First Input Delay (FID)
-  // Good: < 100ms, Needs Improvement: 100-300ms, Poor: > 300ms
-  onFID(sendToAnalytics);
-
   // First Contentful Paint (FCP)
   // Good: < 1.8s, Needs Improvement: 1.8-3s, Poor: > 3s
   onFCP(sendToAnalytics);
@@ -91,12 +87,12 @@ export function reportPerformance(name: string, value: number, unit = 'ms') {
     console.log(`[Performance] ${name}: ${value}${unit}`);
   }
 
-  trackEvent({
-    category: 'Performance',
-    action: name,
-    value: Math.round(value),
-    nonInteraction: true,
-  });
+  trackEvent(
+    'Performance',
+    name,
+    unit,
+    Math.round(value)
+  );
 }
 
 /**

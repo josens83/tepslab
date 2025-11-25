@@ -98,3 +98,6 @@ export const requireAdmin = (req: AuthRequest, res: Response, next: NextFunction
 
   next();
 };
+
+// Alias for authenticate
+export const auth = authenticate;

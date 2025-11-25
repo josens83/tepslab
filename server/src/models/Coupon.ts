@@ -21,8 +21,13 @@ export interface ICouponDocument extends Document {
   applicableCourses?: mongoose.Types.ObjectId[]; // Specific courses (empty = all)
   createdBy: mongoose.Types.ObjectId;
   metadata?: Record<string, any>;
+  currency?: string;
   createdAt: Date;
   updatedAt: Date;
+
+  // Methods
+  isValid(): boolean;
+  calculateDiscount(amount: number): number;
 }
 
 const couponSchema = new Schema<ICouponDocument>(

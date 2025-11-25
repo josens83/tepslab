@@ -103,7 +103,7 @@ export const createAdvancedRateLimiter = (
       const redisClient = getRedisClient();
 
       // If Redis is not available, fall back to in-memory rate limiting
-      if (!redisClient || !redisClient.isOpen) {
+      if (!redisClient || redisClient.status !== 'ready') {
         console.warn('Redis not available for rate limiting');
         return next();
       }
@@ -136,13 +136,13 @@ export const createAdvancedRateLimiter = (
       const multi = redisClient.multi();
 
       // Remove old entries outside the current window
-      multi.zRemRangeByScore(key, 0, windowStart);
+      multi.zremrangebyscore(key, 0, windowStart);
 
       // Count current requests in window
-      multi.zCard(key);
+      multi.zcard(key);
 
       // Add current request
-      multi.zAdd(key, { score: now, value: `${now}` });
+      multi.zadd(key, now, `${now}`);
 
       // Set expiry on the key
       multi.expire(key, Math.ceil(config.windowMs / 1000));
@@ -150,7 +150,7 @@ export const createAdvancedRateLimiter = (
       const results = await multi.exec();
 
       // Get count from zCard result (index 1)
-      const currentCount = results?.[1] as number || 0;
+      const currentCount = (results?.[1]?.[1] as number) || 0;
 
       // Set rate limit headers
       res.setHeader('X-RateLimit-Limit', config.max);
@@ -173,7 +173,7 @@ export const createAdvancedRateLimiter = (
           if (res.statusCode >= 200 && res.statusCode < 300) {
             // Remove the last request from count on success
             try {
-              await redisClient.zRem(key, `${now}`);
+              await redisClient.zrem(key, `${now}`);
             } catch (err) {
               console.error('Failed to remove successful request from rate limit:', err);
             }
@@ -186,7 +186,7 @@ export const createAdvancedRateLimiter = (
           if (res.statusCode >= 400) {
             // Remove the last request from count on failure
             try {
-              await redisClient.zRem(key, `${now}`);
+              await redisClient.zrem(key, `${now}`);
             } catch (err) {
               console.error('Failed to remove failed request from rate limit:', err);
             }
@@ -211,7 +211,7 @@ export const ipRateLimiter = (config: RateLimitConfig) => {
     try {
       const redisClient = getRedisClient();
 
-      if (!redisClient || !redisClient.isOpen) {
+      if (!redisClient || redisClient.status !== 'ready') {
         console.warn('Redis not available for IP rate limiting');
         return next();
       }
@@ -222,13 +222,13 @@ export const ipRateLimiter = (config: RateLimitConfig) => {
       const windowStart = now - config.windowMs;
 
       const multi = redisClient.multi();
-      multi.zRemRangeByScore(key, 0, windowStart);
-      multi.zCard(key);
-      multi.zAdd(key, { score: now, value: `${now}` });
+      multi.zremrangebyscore(key, 0, windowStart);
+      multi.zcard(key);
+      multi.zadd(key, now, `${now}`);
       multi.expire(key, Math.ceil(config.windowMs / 1000));
 
       const results = await multi.exec();
-      const currentCount = results?.[1] as number || 0;
+      const currentCount = (results?.[1]?.[1] as number) || 0;
 
       res.setHeader('X-RateLimit-Limit', config.max);
       res.setHeader('X-RateLimit-Remaining', Math.max(0, config.max - currentCount - 1));

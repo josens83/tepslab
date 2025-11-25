@@ -50,8 +50,8 @@ initSentry();
 const app: Application = express();
 const PORT = process.env.PORT || 5000;
 
-// Sentry request handler must be the first middleware
-app.use(Sentry.Handlers.requestHandler());
+// Sentry request handler
+// Note: In newer Sentry SDK versions, use Sentry.setupExpressErrorHandler(app) after all routes
 
 // Security Middleware
 // Set security HTTP headers
@@ -176,8 +176,8 @@ app.use('/api/gamification', gamificationRoutes);
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
 
-// Sentry error handler must be before other error handlers
-app.use(Sentry.Handlers.errorHandler());
+// Sentry error handler (using newer API)
+Sentry.setupExpressErrorHandler(app);
 
 // Error handling
 app.use(notFound);

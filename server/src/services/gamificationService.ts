@@ -26,7 +26,7 @@ export class GamificationService {
   /**
    * Initialize user level (called on user registration)
    */
-  static async initializeUserLevel(userId: mongoose.Types.ObjectId): Promise<IUserLevel> {
+  static async initializeUserLevel(userId: mongoose.Types.ObjectId): Promise<any> {
     const existing = await UserLevel.findOne({ userId });
     if (existing) return existing;
 

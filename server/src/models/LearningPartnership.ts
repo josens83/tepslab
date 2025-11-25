@@ -88,6 +88,14 @@ export interface ILearningPartnership extends Document {
 
   createdAt: Date;
   updatedAt: Date;
+
+  // Methods
+  accept(): Promise<void>;
+  cancel(userId: mongoose.Types.ObjectId): Promise<void>;
+  complete(): Promise<void>;
+  addStudySession(session: { scheduledAt: Date; duration: number; notes?: string; attendees: mongoose.Types.ObjectId[] }): Promise<void>;
+  updateProgress(partnerId: mongoose.Types.ObjectId, data: { score?: number; questionsCompleted?: number; studyHours?: number }): Promise<void>;
+  addFeedback(feedback: { providedBy: mongoose.Types.ObjectId; rating: number; comment: string }): Promise<void>;
 }
 
 /**

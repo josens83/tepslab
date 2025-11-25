@@ -105,6 +105,10 @@ export interface IUserLevel extends Document {
 
   createdAt: Date;
   updatedAt: Date;
+
+  // Methods
+  addXP(amount: number): Promise<{ levelUp: boolean; newLevel?: number }>;
+  addCoins(amount: number): Promise<void>;
 }
 
 /**

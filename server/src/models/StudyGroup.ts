@@ -91,6 +91,14 @@ export interface IStudyGroup extends Document {
   createdAt: Date;
   updatedAt: Date;
   archivedAt?: Date;
+
+  // Methods
+  addMember(userId: mongoose.Types.ObjectId, role?: string): Promise<void>;
+  removeMember(userId: mongoose.Types.ObjectId): Promise<void>;
+  isAdminOrOwner(userId: mongoose.Types.ObjectId): boolean;
+  updateMemberRole(userId: mongoose.Types.ObjectId, role: string): Promise<void>;
+  isMember(userId: mongoose.Types.ObjectId): boolean;
+  scheduleSession(session: IStudySession): Promise<void>;
 }
 
 /**

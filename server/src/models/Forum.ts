@@ -56,6 +56,12 @@ export interface IForumPost extends Document {
   closedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+
+  // Methods
+  incrementViews(): void;
+  toggleUpvote(userId: mongoose.Types.ObjectId): void;
+  toggleDownvote(userId: mongoose.Types.ObjectId): void;
+  acceptAnswer(commentId: mongoose.Types.ObjectId): void;
 }
 
 /**
@@ -83,6 +89,10 @@ export interface IForumComment extends Document {
   deletedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+
+  // Methods
+  toggleUpvote(userId: mongoose.Types.ObjectId): void;
+  toggleDownvote(userId: mongoose.Types.ObjectId): void;
 }
 
 /**
