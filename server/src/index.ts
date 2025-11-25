@@ -38,6 +38,7 @@ import studyGroupRoutes from './routes/studyGroup';
 import forumRoutes from './routes/forum';
 import messagingRoutes from './routes/messaging';
 import partnerMatchingRoutes from './routes/partnerMatching';
+import gamificationRoutes from './routes/gamification';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 // Load environment variables
@@ -168,6 +169,9 @@ app.use('/api/study-groups', studyGroupRoutes);
 app.use('/api/forum', forumRoutes);
 app.use('/api/messaging', messagingRoutes);
 app.use('/api/partner-matching', partnerMatchingRoutes);
+
+// Phase 5-2: Gamification & Engagement System
+app.use('/api/gamification', gamificationRoutes);
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
