@@ -29,6 +29,16 @@ import uploadRoutes from './routes/uploadRoutes';
 import noteRoutes from './routes/noteRoutes';
 import bookmarkRoutes from './routes/bookmarkRoutes';
 import aiTutorRoutes from './routes/aiTutorRoutes';
+import tepsQuestionsRoutes from './routes/tepsQuestions';
+import personalizedLearningRoutes from './routes/personalizedLearning';
+import tepsExamsRoutes from './routes/tepsExams';
+import enhancedAITutorRoutes from './routes/enhancedAITutor';
+import learningAnalyticsRoutes from './routes/learningAnalytics';
+import studyGroupRoutes from './routes/studyGroup';
+import forumRoutes from './routes/forum';
+import messagingRoutes from './routes/messaging';
+import partnerMatchingRoutes from './routes/partnerMatching';
+import gamificationRoutes from './routes/gamification';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 // Load environment variables
@@ -148,6 +158,20 @@ app.use('/api/sitemap', sitemapRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/ai-tutor', aiTutorRoutes);
+app.use('/api/teps-questions', tepsQuestionsRoutes);
+app.use('/api/personalized-learning', personalizedLearningRoutes);
+app.use('/api/teps-exams', tepsExamsRoutes);
+app.use('/api/enhanced-ai-tutor', enhancedAITutorRoutes);
+app.use('/api/learning-analytics', learningAnalyticsRoutes);
+
+// Phase 5-1: Social Learning & Community Features
+app.use('/api/study-groups', studyGroupRoutes);
+app.use('/api/forum', forumRoutes);
+app.use('/api/messaging', messagingRoutes);
+app.use('/api/partner-matching', partnerMatchingRoutes);
+
+// Phase 5-2: Gamification & Engagement System
+app.use('/api/gamification', gamificationRoutes);
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
