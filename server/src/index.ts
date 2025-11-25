@@ -39,6 +39,7 @@ import forumRoutes from './routes/forum';
 import messagingRoutes from './routes/messaging';
 import partnerMatchingRoutes from './routes/partnerMatching';
 import gamificationRoutes from './routes/gamification';
+import advancedAIRoutes from './routes/advancedAI';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 // Load environment variables
@@ -172,6 +173,9 @@ app.use('/api/partner-matching', partnerMatchingRoutes);
 
 // Phase 5-2: Gamification & Engagement System
 app.use('/api/gamification', gamificationRoutes);
+
+// Phase 5-3: Advanced AI Features
+app.use('/api/advanced-ai', advancedAIRoutes);
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
