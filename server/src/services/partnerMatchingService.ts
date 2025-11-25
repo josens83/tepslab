@@ -295,7 +295,9 @@ export class PartnerMatchingService {
 
     await Promise.all([requesterRequest.save(), targetRequest.save()]);
 
-    return partnership.populate(['partner1', 'partner2'], 'name avatar email');
+    await (partnership as any).populate('partner1', 'name avatar email');
+    await (partnership as any).populate('partner2', 'name avatar email');
+    return partnership;
   }
 
   /**
@@ -332,7 +334,9 @@ export class PartnerMatchingService {
     partnership.conversationId = conversation._id as mongoose.Types.ObjectId;
     await partnership.save();
 
-    return partnership.populate(['partner1', 'partner2'], 'name avatar email');
+    await (partnership as any).populate('partner1', 'name avatar email');
+    await (partnership as any).populate('partner2', 'name avatar email');
+    return partnership;
   }
 
   /**
@@ -437,7 +441,7 @@ export class PartnerMatchingService {
       throw new Error('Not authorized to add study session');
     }
 
-    partnership.addStudySession(session);
+    (partnership as any).addStudySession(session);
     await partnership.save();
 
     return partnership;
@@ -507,7 +511,7 @@ export class PartnerMatchingService {
       throw new Error('Feedback already provided');
     }
 
-    partnership.addFeedback(userId, rating, comment);
+    (partnership as any).addFeedback(userId, rating, comment);
     await partnership.save();
 
     return partnership;

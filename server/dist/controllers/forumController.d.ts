@@ -1,0 +1,21 @@
+import { Request, Response, NextFunction } from 'express';
+export declare const createPost: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const getPost: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const getPosts: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const updatePost: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const deletePost: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const closePost: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const toggleUpvote: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const toggleDownvote: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const createComment: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const getComments: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const updateComment: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const deleteComment: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const toggleCommentUpvote: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const toggleCommentDownvote: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const acceptAnswer: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const getTrendingTags: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const getUserActivity: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const pinPost: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const featurePost: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+//# sourceMappingURL=forumController.d.ts.map

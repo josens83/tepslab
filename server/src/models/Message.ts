@@ -44,6 +44,15 @@ export interface IConversation extends Document {
 
   createdAt: Date;
   updatedAt: Date;
+
+  // Methods
+  updateLastMessage(content: string, senderId: mongoose.Types.ObjectId): void;
+  markAsRead(userId: mongoose.Types.ObjectId): void;
+  incrementUnread(senderId: mongoose.Types.ObjectId): void;
+  addParticipant(userId: mongoose.Types.ObjectId): void;
+  removeParticipant(userId: mongoose.Types.ObjectId): void;
+  toggleMute(userId: mongoose.Types.ObjectId): void;
+  toggleArchive(userId: mongoose.Types.ObjectId): void;
 }
 
 /**
@@ -88,6 +97,10 @@ export interface IMessage extends Document {
   deletedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+
+  // Methods
+  markAsReadBy(userId: mongoose.Types.ObjectId): void;
+  addReaction(emoji: string, userId: mongoose.Types.ObjectId): void;
 }
 
 /**

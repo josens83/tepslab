@@ -410,8 +410,8 @@ Always respond in Korean unless specifically asked otherwise.`;
   private static generateRecommendedActions(
     context: any,
     sentimentScore: number
-  ): { type: string; description: string }[] {
-    const actions: { type: string; description: string }[] = [];
+  ): { type: 'practice' | 'review' | 'rest' | 'seek_help'; description: string }[] {
+    const actions: { type: 'practice' | 'review' | 'rest' | 'seek_help'; description: string }[] = [];
 
     if (sentimentScore < -0.3) {
       actions.push({

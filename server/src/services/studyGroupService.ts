@@ -302,7 +302,7 @@ export class StudyGroupService {
       throw new Error('Only group members can schedule sessions');
     }
 
-    group.scheduleSession(session);
+    (group as any).scheduleSession(session);
     await group.save();
 
     return group;

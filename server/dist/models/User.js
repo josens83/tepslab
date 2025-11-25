@@ -74,7 +74,7 @@ const userSchema = new mongoose_1.Schema({
     },
     provider: {
         type: String,
-        enum: ['local', 'kakao', 'naver'],
+        enum: ['local', 'kakao', 'naver', 'google', 'facebook', 'github', 'apple'],
         default: 'local',
     },
     providerId: {
@@ -82,7 +82,7 @@ const userSchema = new mongoose_1.Schema({
     },
     role: {
         type: String,
-        enum: ['student', 'admin'],
+        enum: ['student', 'instructor', 'admin'],
         default: 'student',
     },
     isEmailVerified: {
@@ -95,12 +95,26 @@ const userSchema = new mongoose_1.Schema({
             ref: 'Course',
         },
     ],
+    twoFactorEnabled: {
+        type: Boolean,
+        default: false,
+    },
+    twoFactorSecret: {
+        type: String,
+        select: false, // Don't include in queries by default
+    },
+    twoFactorBackupCodes: {
+        type: [String],
+        select: false, // Don't include in queries by default
+    },
 }, {
     timestamps: true,
 });
 // Index for faster queries
 userSchema.index({ email: 1 });
 userSchema.index({ provider: 1, providerId: 1 });
+userSchema.index({ role: 1 });
+userSchema.index({ createdAt: -1 });
 // Hash password before saving
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password') || !this.password) {

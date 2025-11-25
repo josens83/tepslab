@@ -62,7 +62,7 @@ export class TEPSExamService {
     });
 
     if (!config) {
-      config = await this.createOfficialExamConfig(userId, difficulty);
+      config = await this.createOfficialExamConfig(userId, difficulty) as any;
     }
 
     // Select questions for this attempt

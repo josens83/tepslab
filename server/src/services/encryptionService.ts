@@ -35,7 +35,7 @@ export class EncryptionService {
       const key = this.getEncryptionKey();
       const iv = crypto.randomBytes(this.ivLength);
 
-      const cipher = crypto.createCipheriv(this.algorithm, key, iv);
+      const cipher = crypto.createCipheriv(this.algorithm, key, iv) as crypto.CipherGCM;
 
       let encrypted = cipher.update(plaintext, 'utf8', 'hex');
       encrypted += cipher.final('hex');
@@ -72,7 +72,7 @@ export class EncryptionService {
       );
       const encrypted = combined.subarray(this.ivLength + this.tagLength);
 
-      const decipher = crypto.createDecipheriv(this.algorithm, key, iv);
+      const decipher = crypto.createDecipheriv(this.algorithm, key, iv) as crypto.DecipherGCM;
       decipher.setAuthTag(authTag);
 
       let decrypted = decipher.update(encrypted);
