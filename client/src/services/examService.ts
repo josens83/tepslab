@@ -111,7 +111,8 @@ export const examService = {
     if (questionError) throw questionError;
     if (!question) throw new Error('Question not found');
 
-    const isCorrect = answer.selectedAnswer === question.correct_answer;
+    const questionData = question as { correct_answer: string };
+    const isCorrect = answer.selectedAnswer === questionData.correct_answer;
 
     // Get current attempt
     const { data: attempt, error: attemptError } = await supabase
@@ -123,7 +124,8 @@ export const examService = {
     if (attemptError) throw attemptError;
     if (!attempt) throw new Error('Attempt not found');
 
-    const answers = (attempt.answers as UserAnswer[]) || [];
+    const attemptData = attempt as { answers: UserAnswer[] | null };
+    const answers = attemptData.answers || [];
     const userAnswer: UserAnswer = {
       ...answer,
       isCorrect,
@@ -162,7 +164,8 @@ export const examService = {
     if (fetchError) throw fetchError;
     if (!attempt) throw new Error('Attempt not found');
 
-    const answers = (attempt.answers as UserAnswer[]) || [];
+    const attemptData = attempt as { answers: UserAnswer[] | null; exam_config: any };
+    const answers = attemptData.answers || [];
     const sections = ['listening', 'vocabulary', 'grammar', 'reading'];
 
     const sectionResults = sections.map((section) => {
@@ -253,7 +256,8 @@ export const examService = {
     let bestAttempt = null;
 
     for (const attempt of data) {
-      const result = attempt.result as any;
+      const attemptData = attempt as { result: { totalScore: number } | null };
+      const result = attemptData.result;
       if (result?.totalScore > bestScore) {
         bestScore = result.totalScore;
         bestAttempt = attempt;
