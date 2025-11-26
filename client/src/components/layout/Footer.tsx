@@ -27,7 +27,7 @@ export const Footer: React.FC = () => {
           <div className="space-y-4">
             <Logo size="sm" clickable={false} />
             <p className="text-sm text-gray-600 leading-relaxed">
-              텝스의 정석, 컨설팀스는<br />
+              TepsLab은<br />
               필요한 점수만큼만 공부하는<br />
               효율적인 학습을 제공합니다.
             </p>
@@ -70,7 +70,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link to="/about" className="text-sm text-gray-600 hover:text-brand-yellow transition-colors">
-                  컨설팀스 소개
+                  TepsLab 소개
                 </Link>
               </li>
             </ul>
@@ -95,11 +95,11 @@ export const Footer: React.FC = () => {
                 </div>
               </div>
               <a
-                href="mailto:help@consulteps.com"
+                href="mailto:help@example.com"
                 className="flex items-center gap-2 text-sm text-gray-600 hover:text-brand-yellow transition-colors"
               >
                 <IoMail className="w-4 h-4" />
-                help@consulteps.com
+                help@example.com
               </a>
             </div>
           </div>
@@ -108,17 +108,17 @@ export const Footer: React.FC = () => {
           <div>
             <h3 className="font-bold text-gray-900 mb-4">사업자 정보</h3>
             <div className="space-y-2 text-sm text-gray-600">
-              <p>대표 송희원</p>
-              <p>개인정보책임자 박현진</p>
+              <p>대표 홍길동</p>
+              <p>개인정보책임자 김담당</p>
               <p className="text-xs">
-                사업자등록번호 250-92-00263
+                사업자등록번호 123-45-67890
               </p>
               <p className="text-xs">
-                통신판매업 신고번호 2024-성남분당A-0004
+                통신판매업 신고번호 2024-서울강남-0000
               </p>
               <p className="text-xs leading-relaxed mt-3">
-                경기도 성남시 분당구 백현로 97,<br />
-                1212호 (수내동, 주택단지합동)
+                서울시 강남구 테헤란로 123,<br />
+                456호
               </p>
             </div>
           </div>
@@ -136,7 +136,7 @@ export const Footer: React.FC = () => {
               </Link>
             </div>
             <p className="text-sm text-gray-500">
-              Copyright © Consulteps All Rights Reserved.
+              Copyright © TepsLab All Rights Reserved.
             </p>
           </div>
         </div>

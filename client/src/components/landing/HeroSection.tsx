@@ -41,7 +41,7 @@ export const HeroSection: React.FC = () => {
             <iframe
               className="w-full h-full"
               src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-              title="컨설팀스 소개 영상"
+              title="TepsLab 소개 영상"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
