@@ -14,7 +14,7 @@ interface AuthState {
 interface AuthContextType extends AuthState {
   signUp: (email: string, password: string, name: string) => Promise<{ error: AuthError | null }>;
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
-  signInWithOAuth: (provider: 'google' | 'kakao' | 'naver' | 'github') => Promise<void>;
+  signInWithOAuth: (provider: 'google' | 'kakao' | 'github') => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: Error | null }>;
   refreshProfile: () => Promise<void>;
@@ -134,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Sign in with OAuth provider
-  const signInWithOAuth = async (provider: 'google' | 'kakao' | 'naver' | 'github') => {
+  const signInWithOAuth = async (provider: 'google' | 'kakao' | 'github') => {
     await supabase.auth.signInWithOAuth({
       provider,
       options: {
@@ -163,7 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const { error } = await supabase
       .from('profiles')
-      .update(updates)
+      .update(updates as never)
       .eq('id', state.user.id);
 
     if (!error) {

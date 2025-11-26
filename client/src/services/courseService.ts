@@ -89,7 +89,8 @@ export const courseService = {
       .single();
 
     if (error && error.code !== 'PGRST116') throw error;
-    return data?.status === 'active' || data?.status === 'completed';
+    const status = data?.status as string | undefined;
+    return status === 'active' || status === 'completed';
   },
 
   // Get user's enrollments
@@ -115,14 +116,14 @@ export const courseService = {
         user_id: userId,
         course_id: courseId,
         payment_id: paymentId,
-      })
+      } as never)
       .select()
       .single();
 
     if (error) throw error;
 
     // Increment enrolled count
-    await supabase.rpc('increment_enrolled_count', { course_id: courseId });
+    await supabase.rpc('increment_enrolled_count', { course_id: courseId } as never);
 
     return data as Enrollment;
   },
@@ -142,8 +143,9 @@ export const courseService = {
       .single();
 
     if (fetchError) throw fetchError;
+    if (!enrollment) throw new Error('Enrollment not found');
 
-    const progress = (enrollment.progress as any[]) || [];
+    const progress = ((enrollment as any).progress as any[]) || [];
     const existingIndex = progress.findIndex((p) => p.lessonId === lessonId);
 
     const lessonProgress = {
@@ -164,7 +166,7 @@ export const courseService = {
       progress.push(lessonProgress);
     }
 
-    const totalLessons = (enrollment.course as any)?.lessons_count || 1;
+    const totalLessons = ((enrollment as any).course as any)?.lessons_count || 1;
     const completedLessons = progress.filter((p) => p.completed).length;
     const completionPercentage = Math.round((completedLessons / totalLessons) * 100);
 
@@ -175,7 +177,7 @@ export const courseService = {
         completion_percentage: completionPercentage,
         last_accessed_at: new Date().toISOString(),
         status: completionPercentage === 100 ? 'completed' : 'active',
-      })
+      } as never)
       .eq('id', enrollmentId)
       .select()
       .single();
