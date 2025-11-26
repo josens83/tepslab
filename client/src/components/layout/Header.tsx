@@ -24,7 +24,7 @@ const menuItems: MenuItem[] = [
     ],
   },
   { label: '기출문제 해설', href: '/past-exams' },
-  { label: '컨설팀스 소개', href: '/about' },
+  { label: 'TepsLab 소개', href: '/about' },
 ];
 
 export const Header: React.FC = () => {

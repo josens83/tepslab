@@ -52,7 +52,7 @@ const reviews: Review[] = [
   },
   {
     id: '5',
-    title: '단기간 점수상승은 컨설팀스',
+    title: '단기간 점수상승은 TepsLab',
     studentName: '문리더',
     date: '2024.03.07',
     beforeScore: 364,
@@ -97,7 +97,7 @@ const reviews: Review[] = [
   },
   {
     id: '10',
-    title: '컨설팀스로 역대 합격',
+    title: 'TepsLab으로 역대 합격',
     studentName: '김소희',
     date: '2024.02.14',
     beforeScore: 468,

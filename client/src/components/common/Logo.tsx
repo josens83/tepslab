@@ -61,10 +61,7 @@ export const Logo: React.FC<LogoProps> = ({
       {showText && (
         <div className="flex flex-col">
           <span className={`${sizeStyles[size].text} font-bold ${textColor} leading-tight`}>
-            텝스의 정석
-          </span>
-          <span className={`text-xs ${textColor} opacity-80`}>
-            컨설팀스
+            TepsLab
           </span>
         </div>
       )}

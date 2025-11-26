@@ -65,7 +65,7 @@ export const LoginPage: React.FC = () => {
           </Link>
           <h1 className="text-3xl font-bold text-white mt-6 mb-2">로그인</h1>
           <p className="text-gray-400">
-            텝스의 정석, 컨설팀스에 오신 것을 환영합니다
+            TepsLab에 오신 것을 환영합니다
           </p>
         </div>
 
