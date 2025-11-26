@@ -89,7 +89,8 @@ export const courseService = {
       .single();
 
     if (error && error.code !== 'PGRST116') throw error;
-    const status = data?.status as string | undefined;
+    if (!data) return false;
+    const status = (data as { status: string }).status;
     return status === 'active' || status === 'completed';
   },
 
