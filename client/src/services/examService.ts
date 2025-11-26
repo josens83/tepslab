@@ -70,7 +70,7 @@ export const examService = {
         status: 'not_started',
         device_type: 'desktop',
         expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-      })
+      } as never)
       .select()
       .single();
 
@@ -87,7 +87,7 @@ export const examService = {
         started_at: new Date().toISOString(),
         current_section: 'listening',
         current_question_index: 0,
-      })
+      } as never)
       .eq('id', attemptId)
       .select()
       .single();
@@ -109,6 +109,7 @@ export const examService = {
       .single();
 
     if (questionError) throw questionError;
+    if (!question) throw new Error('Question not found');
 
     const isCorrect = answer.selectedAnswer === question.correct_answer;
 
@@ -120,6 +121,7 @@ export const examService = {
       .single();
 
     if (attemptError) throw attemptError;
+    if (!attempt) throw new Error('Attempt not found');
 
     const answers = (attempt.answers as UserAnswer[]) || [];
     const userAnswer: UserAnswer = {
@@ -140,7 +142,7 @@ export const examService = {
       .update({
         answers,
         current_question_index: answers.length,
-      })
+      } as never)
       .eq('id', attemptId)
       .select()
       .single();
@@ -158,6 +160,7 @@ export const examService = {
       .single();
 
     if (fetchError) throw fetchError;
+    if (!attempt) throw new Error('Attempt not found');
 
     const answers = (attempt.answers as UserAnswer[]) || [];
     const sections = ['listening', 'vocabulary', 'grammar', 'reading'];
@@ -211,7 +214,7 @@ export const examService = {
         status: 'completed',
         completed_at: new Date().toISOString(),
         result,
-      })
+      } as never)
       .eq('id', attemptId)
       .select()
       .single();
