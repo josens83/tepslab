@@ -36,27 +36,6 @@ export const Logo: React.FC<LogoProps> = ({
 
   const logoContent = (
     <>
-      {/* Logo Icon - 육각형 C */}
-      <div className={`${sizeStyles[size].icon} ${iconColor} relative flex-shrink-0`}>
-        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* 육각형 배경 */}
-          <path
-            d="M20 2L35 11V29L20 38L5 29V11L20 2Z"
-            fill="currentColor"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-          {/* C 글자 */}
-          <path
-            d="M25 14C23 12 21 11 18 11C14 11 11 14 11 18V22C11 26 14 29 18 29C21 29 23 28 25 26"
-            stroke={variant === 'white' ? '#1F2937' : 'white'}
-            strokeWidth="3"
-            strokeLinecap="round"
-            fill="none"
-          />
-        </svg>
-      </div>
-
       {/* Logo Text */}
       {showText && (
         <div className="flex flex-col">
