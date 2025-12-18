@@ -61,10 +61,13 @@ jobs:
         working-directory: ./client
         run: npm ci --legacy-peer-deps
 
+      - name: TypeScript type check
+        working-directory: ./client
+        run: npm run typecheck
+
       - name: Run linter
         working-directory: ./client
         run: npm run lint
-        continue-on-error: true
 
       - name: Build
         working-directory: ./client

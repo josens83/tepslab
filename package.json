@@ -1,5 +1,31 @@
 {
+  "name": "tepslab",
+  "private": true,
+  "workspaces": ["client"],
   "dependencies": {
     "openai": "^6.9.1"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "typecheck": "cd client && npm run typecheck",
+    "lint": "cd client && npm run lint",
+    "build": "cd client && npm run build",
+    "verify": "cd client && npm run verify"
+  },
+  "lint-staged": {
+    "client/src/**/*.{ts,tsx}": [
+      "eslint --fix",
+      "bash -c 'cd client && npm run typecheck'"
+    ],
+    "client/src/**/*.{js,jsx,ts,tsx,json,css,md}": [
+      "prettier --write --ignore-unknown"
+    ]
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }
