@@ -7,6 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch",
+    "verify": "npm run typecheck && npm run lint && npm run build",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -16,6 +20,9 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:codegen": "playwright codegen"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   },
   "dependencies": {
     "@sentry/react": "^10.26.0",
