@@ -428,11 +428,92 @@ const DataList = () => {
 };
 ```
 
-### 접근성 필수:
-- 모든 `<img>`에 의미 있는 `alt` 텍스트
-- 모든 폼 요소에 `<label>` 연결
-- 버튼에 명확한 텍스트 또는 `aria-label`
-- 키보드로 모든 기능 사용 가능
+### 접근성 필수 (WCAG 2.1 AA):
+
+#### 시맨틱 HTML
+```tsx
+// ✅ 올바른 시맨틱 구조
+<header>...</header>
+<nav aria-label="메인 네비게이션">...</nav>
+<main id="main-content">...</main>
+<footer>...</footer>
+
+// ❌ div로만 구성
+<div class="header">...</div>
+```
+
+#### 키보드 접근성
+```tsx
+// ✅ 건너뛰기 링크 (페이지 최상단)
+<a href="#main-content" className="sr-only focus:not-sr-only">
+  본문으로 건너뛰기
+</a>
+
+// ✅ 포커스 표시 (focus-visible)
+className="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+
+// ❌ 포커스 제거 금지
+className="outline-none focus:outline-none"
+```
+
+#### 이미지와 아이콘
+```tsx
+// ✅ 의미 있는 이미지
+<img src="/chart.png" alt="2024년 매출: 1분기 100만원, 2분기 150만원" />
+
+// ✅ 장식 이미지
+<img src="/decoration.svg" alt="" aria-hidden="true" />
+
+// ✅ 아이콘 버튼
+<button aria-label="검색">
+  <SearchIcon aria-hidden="true" />
+</button>
+
+// ✅ 아이콘 + 텍스트
+<button>
+  <MailIcon aria-hidden="true" />
+  <span>이메일 보내기</span>
+</button>
+```
+
+#### 폼 접근성
+```tsx
+<label htmlFor="email">
+  이메일
+  <span aria-hidden="true" className="text-red-500">*</span>
+  <span className="sr-only">(필수)</span>
+</label>
+<input
+  id="email"
+  type="email"
+  required
+  aria-required="true"
+  aria-describedby="email-hint email-error"
+  aria-invalid={!!error}
+  autoComplete="email"
+/>
+<p id="email-hint" className="text-sm text-gray-500">실제 사용하는 이메일</p>
+{error && <p id="email-error" className="text-red-500" role="alert">{error}</p>}
+```
+
+#### 동적 콘텐츠 알림
+```tsx
+// 토스트/알림
+<div role="alert" aria-live="assertive">에러 발생</div>
+
+// 상태 메시지 (덜 긴급)
+<div role="status" aria-live="polite">저장 완료</div>
+```
+
+#### 색상 대비
+```
+일반 텍스트: 4.5:1 이상
+큰 텍스트 (18pt+): 3:1 이상
+UI 컴포넌트: 3:1 이상
+
+// ❌ 색상만으로 정보 전달 금지
+// ✅ 색상 + 아이콘 + 텍스트로 표시
+```
 
 ### 금지 사항:
 - ❌ 하드코딩된 색상값 (예: `bg-blue-500`)
@@ -586,6 +667,80 @@ test('홈페이지 접근성', async ({ page }) => {
 
   expect(results.violations).toEqual([]);
 });
+```
+
+## 성능 최적화 (Core Web Vitals)
+
+### 목표 지표
+```
+LCP (Largest Contentful Paint): ≤ 2.5초
+INP (Interaction to Next Paint): ≤ 200ms
+CLS (Cumulative Layout Shift): ≤ 0.1
+```
+
+### LCP 최적화
+```tsx
+// ✅ 히어로/LCP 이미지에 priority 필수
+import Image from 'next/image';
+
+<Image
+  src="/hero.jpg"
+  alt="메인 배너"
+  width={1200}
+  height={600}
+  priority  // LCP 이미지에 필수!
+/>
+
+// ❌ LCP 이미지에 lazy loading
+<Image src="/hero.jpg" />  // priority 없음 = lazy
+```
+
+### CLS 최적화
+```tsx
+// ✅ 이미지 크기 명시 (레이아웃 이동 방지)
+<Image src="/photo.jpg" width={800} height={600} alt="..." />
+
+// ✅ 비율 유지 컨테이너
+<div className="aspect-video">
+  <Image src="/video-thumb.jpg" fill className="object-cover" alt="..." />
+</div>
+
+// ✅ 동적 콘텐츠 공간 예약
+<div className="min-h-[200px]">
+  {isLoading ? <Skeleton /> : <AdBanner />}
+</div>
+
+// ❌ 크기 없는 이미지
+<img src="/photo.jpg" alt="..." />
+```
+
+### INP 최적화
+```tsx
+// ✅ 무거운 컴포넌트 동적 임포트
+import dynamic from 'next/dynamic';
+
+const HeavyChart = dynamic(() => import('./HeavyChart'), {
+  loading: () => <ChartSkeleton />,
+  ssr: false,
+});
+
+// ✅ useTransition으로 긴급하지 않은 업데이트 분리
+const [isPending, startTransition] = useTransition();
+
+const handleSearch = (value) => {
+  setQuery(value);  // 긴급: 입력 필드
+  startTransition(() => {
+    setResults(filterItems(value));  // 비긴급: 검색 결과
+  });
+};
+```
+
+### 로딩 UX 전략
+```
+< 100ms    아무것도 표시 안 함 (즉각적)
+100ms-1초  미묘한 인디케이터 (버튼 스피너)
+1초-3초    Skeleton UI
+3초+       진행률 표시 + 예상 시간
 ```
 
 ## 자주 하는 실수 방지

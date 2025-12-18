@@ -158,18 +158,48 @@ const DataList = () => {
 };
 ```
 
-## 접근성 필수 사항
-```tsx
-// ✅ 필수
-<img src="..." alt="프로필 이미지: 김철수님" />
-<label htmlFor="email">이메일</label>
-<input id="email" type="email" />
-<button aria-label="메뉴 열기"><MenuIcon /></button>
+## 접근성 (WCAG 2.1 AA)
 
-// ❌ 금지
-<img src="..." />
-<input placeholder="이메일" />
-<button><MenuIcon /></button>
+### 시맨틱 HTML
+```tsx
+<header /><nav /><main /><footer />  // ✅
+<div class="header" />               // ❌
+```
+
+### 키보드 접근성
+```tsx
+// ✅ 포커스 표시
+className="focus-visible:ring-2 focus-visible:ring-primary"
+
+// ❌ 포커스 제거 금지
+className="outline-none focus:outline-none"
+```
+
+### 이미지/아이콘
+```tsx
+// 의미 있는 이미지
+<img src="..." alt="2024년 매출 그래프" />
+
+// 장식 이미지
+<img src="..." alt="" aria-hidden="true" />
+
+// 아이콘 버튼
+<button aria-label="검색"><SearchIcon aria-hidden="true" /></button>
+```
+
+### 폼 접근성
+```tsx
+<label htmlFor="email">이메일</label>
+<input id="email" aria-describedby="email-error" aria-invalid={!!error} />
+{error && <p id="email-error" role="alert">{error}</p>}
+```
+
+### 색상 대비
+```
+일반 텍스트: 4.5:1 이상
+큰 텍스트: 3:1 이상
+❌ 색상만으로 정보 전달 금지
+✅ 색상 + 아이콘 + 텍스트
 ```
 
 ## 금지 사항
@@ -261,6 +291,43 @@ await expect(page).toHaveScreenshot('homepage.png');
 ```typescript
 const results = await new AxeBuilder({ page }).analyze();
 expect(results.violations).toEqual([]);
+```
+
+## 성능 최적화 (Core Web Vitals)
+
+### 목표
+```
+LCP ≤ 2.5초  |  INP ≤ 200ms  |  CLS ≤ 0.1
+```
+
+### LCP 최적화
+```tsx
+// ✅ 히어로 이미지에 priority
+<Image src="/hero.jpg" priority />
+
+// ❌ LCP 이미지 lazy loading
+<Image src="/hero.jpg" />
+```
+
+### CLS 최적화
+```tsx
+// ✅ 이미지 크기 명시
+<Image src="/photo.jpg" width={800} height={600} />
+
+// ✅ aspect-ratio 사용
+<div className="aspect-video"><Image fill /></div>
+
+// ❌ 크기 없는 이미지
+<img src="/photo.jpg" />
+```
+
+### INP 최적화
+```tsx
+// 무거운 컴포넌트 동적 임포트
+const Heavy = dynamic(() => import('./Heavy'), { ssr: false });
+
+// useTransition으로 비긴급 업데이트 분리
+startTransition(() => setResults(filtered));
 ```
 
 ## TypeScript
