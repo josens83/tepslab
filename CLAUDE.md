@@ -441,6 +441,153 @@ const DataList = () => {
 - ❌ label 없는 input
 - ❌ alt 없는 img
 
+## 애니메이션 가이드 (Framer Motion)
+
+### Duration 기준
+```
+50-100ms   즉각적 피드백 (호버, 색상 변화)
+150-200ms  빠른 전환 (드롭다운, 툴팁)
+200-300ms  표준 전환 (모달, 카드 확장) ← 대부분 여기
+300-500ms  강조 효과 (페이지 전환, 성공 표시)
+```
+
+### Easing 기준
+```
+ease-out     등장 애니메이션 (빠르게 시작 → 천천히 끝)
+ease-in      퇴장 애니메이션 (천천히 시작 → 빠르게 끝)
+ease-in-out  양방향 전환 (토글, 스와이프)
+spring       탄성 효과 (버튼 피드백, 드래그)
+```
+
+### 기본 패턴
+```tsx
+import { motion, AnimatePresence } from 'framer-motion';
+
+// 버튼 인터랙션
+<motion.button
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+>
+  버튼
+</motion.button>
+
+// 등장 애니메이션
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.3, ease: 'easeOut' }}
+>
+  콘텐츠
+</motion.div>
+
+// 모달 (퇴장 포함)
+<AnimatePresence>
+  {isOpen && (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.2 }}
+    >
+      모달 내용
+    </motion.div>
+  )}
+</AnimatePresence>
+
+// 리스트 stagger (순차 등장)
+const container = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 }
+};
+
+<motion.ul variants={container} initial="hidden" animate="visible">
+  {items.map(i => <motion.li key={i.id} variants={item} />)}
+</motion.ul>
+```
+
+### 성능 최적화
+```tsx
+// ✅ GPU 가속 속성 사용 (빠름)
+animate={{ opacity: 1, x: 0, scale: 1, rotate: 0 }}
+
+// ❌ 레이아웃 유발 속성 피하기 (느림)
+animate={{ width: 100, height: 100, top: 0 }}
+```
+
+### 접근성: prefers-reduced-motion 지원
+```tsx
+import { useReducedMotion } from 'framer-motion';
+
+function Component() {
+  const shouldReduceMotion = useReducedMotion();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
+    />
+  );
+}
+```
+
+## UI 품질 자동화 도구
+
+### 테스트 도구 체인
+```
+Storybook        컴포넌트 문서화 + 격리 개발
+Playwright       시각적 회귀 테스트 (스크린샷 비교)
+axe-core         접근성 자동 테스트
+Lighthouse CI    성능/접근성/SEO 점수
+ESLint jsx-a11y  코드 작성 시점 접근성 검사
+```
+
+### Playwright 시각적 테스트 예시
+```typescript
+// tests/visual.spec.ts
+import { test, expect } from '@playwright/test';
+
+test('홈페이지 스크린샷', async ({ page }) => {
+  await page.goto('http://localhost:3000');
+  await expect(page).toHaveScreenshot('homepage.png', {
+    fullPage: true,
+    maxDiffPixels: 100,
+  });
+});
+
+test('모바일 뷰 스크린샷', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.goto('http://localhost:3000');
+  await expect(page).toHaveScreenshot('homepage-mobile.png');
+});
+```
+
+### axe-core 접근성 테스트
+```typescript
+// tests/accessibility.spec.ts
+import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+test('홈페이지 접근성', async ({ page }) => {
+  await page.goto('http://localhost:3000');
+
+  const results = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa'])
+    .analyze();
+
+  expect(results.violations).toEqual([]);
+});
+```
+
 ## 자주 하는 실수 방지
 
 ### 배포 오류
