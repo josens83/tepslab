@@ -13,7 +13,7 @@ export const CourseFilters: React.FC<CourseFiltersProps> = ({
   onFilterChange,
   onReset,
 }) => {
-  const handleChange = (key: keyof Filters, value: any) => {
+  const handleChange = (key: keyof Filters, value: Filters[keyof Filters]) => {
     onFilterChange({ ...filters, [key]: value });
   };
 

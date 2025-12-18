@@ -61,11 +61,10 @@ export const RegisterPage: React.FC = () => {
       return;
     }
 
-    // Prepare data
-    const birthDate =
-      formData.birthYear && formData.birthMonth && formData.birthDay
-        ? `${formData.birthYear}-${formData.birthMonth.padStart(2, '0')}-${formData.birthDay.padStart(2, '0')}`
-        : undefined;
+    // Prepare data (birthDate reserved for future use)
+    // const birthDate = formData.birthYear && formData.birthMonth && formData.birthDay
+    //   ? `${formData.birthYear}-${formData.birthMonth.padStart(2, '0')}-${formData.birthDay.padStart(2, '0')}`
+    //   : undefined;
 
     try {
       const { error: signUpError } = await signUp(formData.email, formData.password, formData.name);
@@ -76,16 +75,18 @@ export const RegisterPage: React.FC = () => {
         alert('회원가입이 완료되었습니다. 이메일을 확인해주세요.');
         navigate('/login');
       }
-    } catch (err: any) {
-      setError(err.message || '회원가입에 실패했습니다.');
+    } catch (err) {
+      const error = err as Error;
+      setError(error.message || '회원가입에 실패했습니다.');
     }
   };
 
   const handleSocialLogin = async (provider: 'kakao' | 'google' | 'github') => {
     try {
       await signInWithOAuth(provider);
-    } catch (err: any) {
-      setError(err.message || '소셜 로그인에 실패했습니다.');
+    } catch (err) {
+      const error = err as Error;
+      setError(error.message || '소셜 로그인에 실패했습니다.');
     }
   };
 

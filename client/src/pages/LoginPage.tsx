@@ -48,16 +48,18 @@ export const LoginPage: React.FC = () => {
       } else {
         navigate('/');
       }
-    } catch (err: any) {
-      setError(err.message || '로그인에 실패했습니다.');
+    } catch (err) {
+      const error = err as Error;
+      setError(error.message || '로그인에 실패했습니다.');
     }
   };
 
   const handleSocialLogin = async (provider: 'kakao' | 'google' | 'github') => {
     try {
       await signInWithOAuth(provider);
-    } catch (err: any) {
-      setError(err.message || '소셜 로그인에 실패했습니다.');
+    } catch (err) {
+      const error = err as Error;
+      setError(error.message || '소셜 로그인에 실패했습니다.');
     }
   };
 

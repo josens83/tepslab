@@ -26,12 +26,19 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 // Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
+class MockIntersectionObserver implements IntersectionObserver {
+  readonly root: Element | Document | null = null;
+  readonly rootMargin: string = '';
+  readonly thresholds: readonly number[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {}
   disconnect() {}
-  observe() {}
-  takeRecords() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  observe(target: Element) {}
+  takeRecords(): IntersectionObserverEntry[] {
     return [];
   }
-  unobserve() {}
-} as any;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  unobserve(target: Element) {}
+}
+global.IntersectionObserver = MockIntersectionObserver;

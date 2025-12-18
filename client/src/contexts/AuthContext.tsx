@@ -11,13 +11,31 @@ interface AuthState {
   initialized: boolean;
 }
 
+// Combined user type for components (merges User and Profile properties)
+export interface CombinedUser {
+  id: string;
+  email: string;
+  name: string;
+  phone?: string | null;
+  birthDate?: string | null;
+  targetScore?: number | null;
+  role: 'student' | 'instructor' | 'admin';
+  avatarUrl?: string | null;
+  _id: string; // alias for id for compatibility
+}
+
 interface AuthContextType extends AuthState {
+  // Auth methods
   signUp: (email: string, password: string, name: string) => Promise<{ error: AuthError | null }>;
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signInWithOAuth: (provider: 'google' | 'kakao' | 'github') => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: Error | null }>;
   refreshProfile: () => Promise<void>;
+  // Compatibility aliases and computed properties
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -194,6 +212,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signOut,
         updateProfile,
         refreshProfile,
+        // Compatibility aliases
+        isLoading: state.loading,
+        isAuthenticated: !!state.user,
+        logout: signOut,
       }}
     >
       {children}
@@ -201,15 +223,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  return context;
+
+  // Create a combined user object for component compatibility
+  const combinedUser: CombinedUser | null = context.user && context.profile ? {
+    id: context.user.id,
+    _id: context.user.id,
+    email: context.profile.email,
+    name: context.profile.name,
+    phone: context.profile.phone,
+    birthDate: context.profile.birth_date,
+    targetScore: context.profile.target_score,
+    role: context.profile.role,
+    avatarUrl: context.profile.avatar_url,
+  } : null;
+
+  return {
+    ...context,
+    user: combinedUser,
+  };
 }
 
 // Hook for requiring authentication
+// eslint-disable-next-line react-refresh/only-export-components
 export function useRequireAuth(redirectTo = '/login') {
   const auth = useAuth();
 

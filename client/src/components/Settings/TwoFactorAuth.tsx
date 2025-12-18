@@ -36,7 +36,8 @@ export const TwoFactorAuth: React.FC = () => {
       setSecret(data.secret);
       setBackupCodes(data.backupCodes);
       setStep('setup');
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || 'Failed to setup 2FA');
     } finally {
       setIsLoading(false);
@@ -54,7 +55,8 @@ export const TwoFactorAuth: React.FC = () => {
       setIsEnabled(true);
       setStep('status');
       setVerificationCode('');
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || 'Invalid verification code');
     } finally {
       setIsLoading(false);
@@ -72,7 +74,8 @@ export const TwoFactorAuth: React.FC = () => {
       await TwoFactorService.disable(code);
       setSuccess('Two-factor authentication has been disabled');
       setIsEnabled(false);
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || 'Failed to disable 2FA');
     } finally {
       setIsLoading(false);
@@ -91,7 +94,8 @@ export const TwoFactorAuth: React.FC = () => {
       setBackupCodes(newCodes);
       setSuccess('Backup codes have been regenerated');
       setStep('setup'); // Show backup codes
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || 'Failed to regenerate backup codes');
     } finally {
       setIsLoading(false);

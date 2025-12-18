@@ -68,10 +68,11 @@ export const ProfilePage: React.FC = () => {
     try {
       await userAPI.updateProfile(profileForm);
       setMessage({ type: 'success', text: '프로필이 수정되었습니다.' });
-    } catch (err: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
       setMessage({
         type: 'error',
-        text: err.response?.data?.error || '프로필 수정에 실패했습니다.',
+        text: error.response?.data?.error || '프로필 수정에 실패했습니다.',
       });
     } finally {
       setLoading(false);
@@ -102,10 +103,11 @@ export const ProfilePage: React.FC = () => {
       });
       setMessage({ type: 'success', text: '비밀번호가 변경되었습니다.' });
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-    } catch (err: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
       setMessage({
         type: 'error',
-        text: err.response?.data?.error || '비밀번호 변경에 실패했습니다.',
+        text: error.response?.data?.error || '비밀번호 변경에 실패했습니다.',
       });
     } finally {
       setLoading(false);
@@ -126,10 +128,11 @@ export const ProfilePage: React.FC = () => {
       await userAPI.deleteAccount({ password: deletePassword });
       logout();
       navigate('/');
-    } catch (err: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
       setMessage({
         type: 'error',
-        text: err.response?.data?.error || '회원 탈퇴에 실패했습니다.',
+        text: error.response?.data?.error || '회원 탈퇴에 실패했습니다.',
       });
       setLoading(false);
     }

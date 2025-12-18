@@ -164,7 +164,7 @@ export const examService = {
     if (fetchError) throw fetchError;
     if (!attempt) throw new Error('Attempt not found');
 
-    const attemptData = attempt as { answers: UserAnswer[] | null; exam_config: any };
+    const attemptData = attempt as { answers: UserAnswer[] | null; exam_config: Record<string, unknown> | null };
     const answers = attemptData.answers || [];
     const sections = ['listening', 'vocabulary', 'grammar', 'reading'];
 
@@ -258,7 +258,7 @@ export const examService = {
     for (const attempt of data) {
       const attemptData = attempt as { result: { totalScore: number } | null };
       const result = attemptData.result;
-      if (result?.totalScore > bestScore) {
+      if (result && result.totalScore > bestScore) {
         bestScore = result.totalScore;
         bestAttempt = attempt;
       }

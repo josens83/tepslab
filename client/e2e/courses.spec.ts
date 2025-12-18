@@ -132,7 +132,7 @@ test.describe('Course Browsing and Filtering', () => {
     expect(await reviews.count()).toBeGreaterThan(0);
   });
 
-  test('should add course to wishlist', async ({ page, context }) => {
+  test('should add course to wishlist', async ({ page }) => {
     // Login first
     await page.goto('/login');
     await page.fill('input[type="email"]', 'test@example.com');

@@ -21,9 +21,16 @@ export const DashboardPage: React.FC = () => {
   const { user, isLoading: authLoading } = useAuth();
 
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
-  const [payments, setPayments] = useState<any[]>([]);
+  interface Payment {
+    _id: string;
+    courseId: { title?: string };
+    amount: number;
+    status: string;
+    createdAt: string;
+  }
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [_error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -49,8 +56,9 @@ export const DashboardPage: React.FC = () => {
 
       setEnrollments(enrollmentsRes.data.data.enrollments);
       setPayments(paymentsRes.data.data.payments);
-    } catch (err: any) {
-      setError(err.response?.data?.error || '데이터를 불러오는데 실패했습니다.');
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
+      setError(error.response?.data?.error || '데이터를 불러오는데 실패했습니다.');
       console.error('Failed to fetch dashboard data:', err);
     } finally {
       setLoading(false);

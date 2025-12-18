@@ -30,7 +30,7 @@ export const CoursesPage: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      const params: Record<string, any> = {
+      const params: Record<string, string | number | boolean> = {
         page: currentPage,
         limit: COURSES_PER_PAGE,
       };
@@ -49,8 +49,9 @@ export const CoursesPage: React.FC = () => {
       setCourses(fetchedCourses);
       setTotalCourses(total);
       setTotalPages(pages);
-    } catch (err: any) {
-      setError(err.response?.data?.error || '강의를 불러오는데 실패했습니다.');
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
+      setError(error.response?.data?.error || '강의를 불러오는데 실패했습니다.');
       console.error('Failed to fetch courses:', err);
     } finally {
       setLoading(false);

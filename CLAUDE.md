@@ -124,6 +124,93 @@ export const MyComponent = ({ title, onClick }: Props) => {
 - 인증 상태: AuthContext (Supabase)
 - 서버 상태: Supabase 클라이언트 직접 호출
 
+## 디자인 시스템
+
+### 사용 가능한 컴포넌트
+새로 만들지 말고 기존 컴포넌트를 사용하세요:
+
+```
+src/components/common/
+├── Button.tsx       - 버튼 (variant: primary, secondary, outline)
+├── Card.tsx         - 카드 컨테이너
+├── Input.tsx        - 텍스트 입력
+├── Textarea.tsx     - 멀티라인 입력
+├── Modal.tsx        - 모달/다이얼로그
+├── Toast.tsx        - 알림 토스트
+├── LoadingSpinner.tsx - 로딩 인디케이터
+├── LazyImage.tsx    - 이미지 (지연 로딩)
+├── Logo.tsx         - 로고
+└── ProtectedRoute.tsx - 인증 필요 라우트
+```
+
+### Import 경로
+```tsx
+// ✅ 올바른 import
+import { Button, Card, Input } from '@/components/common';
+
+// ❌ 잘못된 import - 직접 구현 금지
+import Button from './MyButton';
+```
+
+### 브랜드 색상 (Tailwind)
+```
+brand-yellow: #FFC600  → bg-brand-yellow, text-brand-yellow
+brand-cyan:   #00D9FF  → bg-brand-cyan, text-brand-cyan
+brand-purple: #9945FF  → bg-brand-purple, text-brand-purple
+brand-pink:   #E91E63  → bg-brand-pink, text-brand-pink
+brand-green:  #4CAF50  → bg-brand-green, text-brand-green
+```
+
+### 버튼 스타일
+```tsx
+// 기본 스타일 클래스
+className="btn-primary"           // 기본 버튼 스타일
+className="btn-primary btn-yellow" // 노란색 버튼
+className="btn-primary btn-purple" // 보라색 버튼
+className="btn-primary btn-cyan"   // 청록색 버튼
+```
+
+### 카드 스타일
+```tsx
+// 기본 카드
+<div className="card">...</div>  // 흰 배경, 라운드, 그림자, 호버 효과
+```
+
+### 반응형 브레이크포인트
+```
+Mobile: default (< 640px)
+Tablet: sm (640px), md (768px)
+Desktop: lg (1024px), xl (1280px)
+
+// 항상 모바일 우선으로 작성
+className="w-full sm:w-1/2 lg:w-1/3"
+```
+
+### 폰트
+- 기본 폰트: Pretendard (한글 최적화)
+- `font-sans` 클래스 사용
+
+## UI 구현 필수 사항
+
+### 모든 데이터 컴포넌트에 필수:
+1. **로딩 상태**: `LoadingSpinner` 또는 Skeleton 사용
+2. **에러 상태**: 에러 메시지 + 재시도 버튼
+3. **빈 상태**: 안내 메시지 + CTA 버튼
+4. **성공 상태**: Toast 알림
+
+### 접근성 필수:
+- 모든 `<img>`에 의미 있는 `alt` 텍스트
+- 모든 폼 요소에 `<label>` 연결
+- 버튼에 명확한 텍스트 또는 `aria-label`
+- 키보드로 모든 기능 사용 가능
+
+### 금지 사항:
+- ❌ 하드코딩된 색상값 (예: `bg-blue-500`)
+- ❌ 인라인 스타일 (`style={{}}`)
+- ❌ 기존 컴포넌트 있는데 새로 구현
+- ❌ label 없는 input
+- ❌ alt 없는 img
+
 ## 자주 하는 실수 방지
 
 ### 배포 오류

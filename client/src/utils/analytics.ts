@@ -91,8 +91,8 @@ export const trackEnrollment = (courseId: string, courseTitle: string) => {
 
 // Track video play
 export const trackVideoPlay = (
-  courseId: string,
-  lessonId: string,
+  _courseId: string,
+  _lessonId: string,
   lessonTitle: string
 ) => {
   trackEvent('Video', 'Play', lessonTitle);
@@ -100,8 +100,8 @@ export const trackVideoPlay = (
 
 // Track video complete
 export const trackVideoComplete = (
-  courseId: string,
-  lessonId: string,
+  _courseId: string,
+  _lessonId: string,
   lessonTitle: string
 ) => {
   trackEvent('Video', 'Complete', lessonTitle);
@@ -134,7 +134,7 @@ export const trackTestCompletion = (testId: string, score: number) => {
 };
 
 // Set user properties
-export const setUserProperties = (userId: string, properties: Record<string, any>) => {
+export const setUserProperties = (userId: string, properties: Record<string, unknown>) => {
   ReactGA.gtag('set', 'user_properties', {
     user_id: userId,
     ...properties,

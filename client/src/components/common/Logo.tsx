@@ -31,7 +31,6 @@ export const Logo: React.FC<LogoProps> = ({
   className = '',
   clickable = true,
 }) => {
-  const iconColor = variant === 'white' ? 'text-white' : 'text-brand-yellow';
   const textColor = variant === 'white' ? 'text-white' : 'text-gray-900';
 
   const logoContent = (

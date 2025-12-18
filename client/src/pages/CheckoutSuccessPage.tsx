@@ -11,7 +11,14 @@ export const CheckoutSuccessPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [paymentData, setPaymentData] = useState<any>(null);
+  interface PaymentData {
+    orderId: string;
+    amount: number;
+    method: string;
+    approvedAt: string;
+    receiptUrl?: string;
+  }
+  const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
 
   useEffect(() => {
     const orderId = searchParams.get('orderId');
@@ -43,10 +50,11 @@ export const CheckoutSuccessPage: React.FC = () => {
       });
 
       setPaymentData(response.data.data.payment);
-    } catch (err: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
       console.error('Payment confirmation error:', err);
       setError(
-        err.response?.data?.error || '결제 승인 중 오류가 발생했습니다.'
+        error.response?.data?.error || '결제 승인 중 오류가 발생했습니다.'
       );
     } finally {
       setLoading(false);

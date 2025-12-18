@@ -40,8 +40,9 @@ export const CheckoutPage: React.FC = () => {
       setError(null);
       const response = await courseAPI.getCourseById(courseId!);
       setCourse(response.data.data.course);
-    } catch (err: any) {
-      setError(err.response?.data?.error || '강의를 불러오는데 실패했습니다.');
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
+      setError(error.response?.data?.error || '강의를 불러오는데 실패했습니다.');
       console.error('Failed to fetch course:', err);
     } finally {
       setLoading(false);
@@ -78,9 +79,10 @@ export const CheckoutPage: React.FC = () => {
         successUrl: `${window.location.origin}/checkout/success`,
         failUrl: `${window.location.origin}/checkout/fail`,
       });
-    } catch (err: any) {
+    } catch (err) {
+      const error = err as Error;
       console.error('Payment error:', err);
-      setError(err.message || '결제 중 오류가 발생했습니다.');
+      setError(error.message || '결제 중 오류가 발생했습니다.');
     } finally {
       setProcessing(false);
     }

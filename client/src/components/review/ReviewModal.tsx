@@ -82,8 +82,9 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
       onSuccess();
       onClose();
-    } catch (err: any) {
-      setError(err.response?.data?.error || '후기 작성에 실패했습니다.');
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
+      setError(error.response?.data?.error || '후기 작성에 실패했습니다.');
     } finally {
       setLoading(false);
     }
