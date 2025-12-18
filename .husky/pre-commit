@@ -1,16 +1,15 @@
 #!/usr/bin/env sh
 
 # 배포 전 검증 자동화 (챕터 6)
-# TypeScript 타입 체크 및 ESLint 검증
+# lint-staged로 스테이징된 파일만 검증
 
 echo "🔍 Pre-commit 검증 시작..."
 
-# 전체 TypeScript 타입 체크
-echo "📝 TypeScript 타입 체크..."
-cd client && npm run typecheck
+# lint-staged 실행 (스테이징된 파일만 검증)
+npx lint-staged
 
 if [ $? -ne 0 ]; then
-  echo "❌ TypeScript 오류가 있습니다. 커밋이 중단됩니다."
+  echo "❌ 검증 실패. 커밋이 중단됩니다."
   exit 1
 fi
 

@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+# 푸시 전 최종 검증 (챕터 6)
+echo "🚀 푸시 전 최종 검증 시작..."
+
+# TypeScript 타입 체크
+echo "📝 TypeScript 타입 체크..."
+cd client && npm run typecheck || exit 1
+
+# ESLint 검사
+echo "📋 ESLint 검사..."
+npm run lint || exit 1
+
+# 빌드 테스트
+echo "🏗️ 빌드 테스트..."
+npm run build || exit 1
+
+echo "✅ 모든 검증 통과! 푸시를 진행합니다."

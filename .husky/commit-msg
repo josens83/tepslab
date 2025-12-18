@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+# 커밋 메시지 검증 (Conventional Commits)
+npx --no -- commitlint --edit $1
