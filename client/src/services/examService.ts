@@ -258,7 +258,7 @@ export const examService = {
     for (const attempt of data) {
       const attemptData = attempt as { result: { totalScore: number } | null };
       const result = attemptData.result;
-      if (result?.totalScore > bestScore) {
+      if (result && result.totalScore > bestScore) {
         bestScore = result.totalScore;
         bestAttempt = attempt;
       }

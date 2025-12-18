@@ -57,6 +57,7 @@ export const DiagnosticTestPage: React.FC = () => {
 
       return () => clearInterval(timer);
     }
+    return undefined;
   }, [started, timeRemaining]);
 
   const fetchTest = async () => {
