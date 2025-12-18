@@ -176,27 +176,257 @@ className="btn-primary btn-cyan"   // 청록색 버튼
 <div className="card">...</div>  // 흰 배경, 라운드, 그림자, 호버 효과
 ```
 
-### 반응형 브레이크포인트
-```
-Mobile: default (< 640px)
-Tablet: sm (640px), md (768px)
-Desktop: lg (1024px), xl (1280px)
+### 반응형 디자인 (Mobile-First 철칙)
 
-// 항상 모바일 우선으로 작성
+#### 브레이크포인트
+```
+Mobile: default (< 640px)   - 기본값, 항상 먼저 작성
+Tablet: sm (640px), md (768px)
+Desktop: lg (1024px), xl (1280px), 2xl (1536px)
+```
+
+#### Mobile-First 규칙
+```tsx
+// ✅ 올바른 순서 (모바일 → 태블릿 → 데스크톱)
 className="w-full sm:w-1/2 lg:w-1/3"
+className="text-sm md:text-base lg:text-lg"
+className="p-4 md:p-6 lg:p-8"
+className="flex flex-col md:flex-row"
+
+// ❌ 잘못된 순서 (데스크톱 → 모바일)
+className="w-1/3 lg:w-full"
+className="flex-row md:flex-col"
+```
+
+#### 터치 타겟 사이즈
+```tsx
+// ✅ 모바일 터치 영역 최소 44x44px
+className="min-h-[44px] min-w-[44px]"
+className="p-3"  // 패딩으로 터치 영역 확보
+
+// ❌ 터치하기 어려운 작은 버튼
+className="p-1 text-xs"
+```
+
+#### 반응형 그리드 패턴
+```tsx
+// 카드 그리드 (1열 → 2열 → 3열)
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+  {items.map(item => <Card key={item.id} />)}
+</div>
+
+// 사이드바 레이아웃 (모바일: 숨김, 데스크톱: 표시)
+<div className="hidden lg:block lg:w-64">사이드바</div>
+<main className="w-full lg:ml-64">메인 콘텐츠</main>
+```
+
+#### 반응형 타이포그래피
+```tsx
+// 제목: 모바일 작게 → 데스크톱 크게
+<h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">제목</h1>
+
+// 본문: 모바일 최적화
+<p className="text-sm md:text-base leading-relaxed">본문</p>
+```
+
+#### 반응형 이미지
+```tsx
+// 컨테이너에 맞게 조절
+<img
+  src="..."
+  alt="설명"
+  className="w-full h-auto object-cover"
+/>
+
+// aspect-ratio 유지
+<div className="aspect-video">
+  <img src="..." alt="..." className="w-full h-full object-cover" />
+</div>
+```
+
+#### 모바일 네비게이션 패턴
+```tsx
+// 데스크톱: 가로 메뉴, 모바일: 햄버거 메뉴
+<nav className="hidden md:flex gap-4">가로 메뉴</nav>
+<button className="md:hidden" aria-label="메뉴 열기">
+  <MenuIcon />
+</button>
 ```
 
 ### 폰트
 - 기본 폰트: Pretendard (한글 최적화)
 - `font-sans` 클래스 사용
 
-## UI 구현 필수 사항
+## UI 상태 패턴 (필수 구현)
 
-### 모든 데이터 컴포넌트에 필수:
-1. **로딩 상태**: `LoadingSpinner` 또는 Skeleton 사용
-2. **에러 상태**: 에러 메시지 + 재시도 버튼
-3. **빈 상태**: 안내 메시지 + CTA 버튼
-4. **성공 상태**: Toast 알림
+모든 데이터 페칭 컴포넌트는 4가지 상태를 반드시 구현해야 합니다.
+
+### 1. 로딩 상태 (Loading State)
+
+#### Skeleton UI vs Spinner 사용 기준
+```tsx
+// Skeleton UI: 레이아웃이 예측 가능한 경우 (리스트, 카드, 프로필)
+<div className="animate-pulse space-y-4">
+  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+  <div className="h-32 bg-gray-200 rounded"></div>
+</div>
+
+// Spinner: 레이아웃 예측 불가능, 전체 페이지 로딩, 버튼 내부
+import { LoadingSpinner } from '@/components/common';
+if (isLoading) return <LoadingSpinner />;
+
+// 버튼 내 로딩
+<Button disabled={isSubmitting}>
+  {isSubmitting ? <LoadingSpinner size="sm" /> : '제출'}
+</Button>
+```
+
+#### Skeleton 컴포넌트 패턴
+```tsx
+// 카드 스켈레톤
+const CardSkeleton = () => (
+  <div className="card animate-pulse">
+    <div className="h-40 bg-gray-200 rounded-t-lg"></div>
+    <div className="p-4 space-y-3">
+      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+    </div>
+  </div>
+);
+
+// 리스트 스켈레톤
+const ListSkeleton = ({ count = 5 }: { count?: number }) => (
+  <div className="space-y-3">
+    {Array.from({ length: count }).map((_, i) => (
+      <div key={i} className="h-16 bg-gray-200 rounded animate-pulse"></div>
+    ))}
+  </div>
+);
+```
+
+### 2. 에러 상태 (Error State)
+
+```tsx
+// 기본 에러 컴포넌트
+interface ErrorStateProps {
+  message?: string;
+  onRetry?: () => void;
+}
+
+const ErrorState = ({
+  message = '데이터를 불러오는데 실패했습니다',
+  onRetry
+}: ErrorStateProps) => (
+  <div className="text-center py-12">
+    <div className="text-red-500 text-5xl mb-4">⚠️</div>
+    <p className="text-gray-600 mb-4">{message}</p>
+    {onRetry && (
+      <Button onClick={onRetry} variant="outline">
+        다시 시도
+      </Button>
+    )}
+  </div>
+);
+
+// 사용 예시
+if (error) return <ErrorState message={error.message} onRetry={refetch} />;
+```
+
+### 3. 빈 상태 (Empty State)
+
+```tsx
+// 기본 빈 상태 컴포넌트
+interface EmptyStateProps {
+  icon?: string;
+  title: string;
+  description?: string;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+}
+
+const EmptyState = ({ icon = '📭', title, description, action }: EmptyStateProps) => (
+  <div className="text-center py-12">
+    <div className="text-5xl mb-4">{icon}</div>
+    <h3 className="text-lg font-semibold text-gray-800 mb-2">{title}</h3>
+    {description && <p className="text-gray-500 mb-4">{description}</p>}
+    {action && (
+      <Button onClick={action.onClick}>{action.label}</Button>
+    )}
+  </div>
+);
+
+// 사용 예시
+if (data.length === 0) return (
+  <EmptyState
+    icon="📚"
+    title="학습 기록이 없습니다"
+    description="첫 번째 학습을 시작해보세요!"
+    action={{ label: '학습 시작', onClick: () => navigate('/courses') }}
+  />
+);
+```
+
+### 4. 성공 상태 (Success Feedback)
+
+```tsx
+// Toast 사용
+import { toast } from '@/components/common/Toast';
+
+// 성공 알림
+toast.success('저장되었습니다');
+
+// 에러 알림
+toast.error('저장에 실패했습니다');
+
+// 정보 알림
+toast.info('자동 저장되었습니다');
+
+// 폼 제출 성공 후 패턴
+const handleSubmit = async (data: FormData) => {
+  try {
+    await submitData(data);
+    toast.success('제출 완료!');
+    navigate('/success');
+  } catch (err) {
+    const error = err as Error;
+    toast.error(error.message || '제출에 실패했습니다');
+  }
+};
+```
+
+### 전체 구현 패턴
+
+```tsx
+const DataList = () => {
+  const { data, isLoading, error, refetch } = useQuery();
+
+  // 1. 로딩 상태
+  if (isLoading) return <ListSkeleton count={5} />;
+
+  // 2. 에러 상태
+  if (error) return <ErrorState message={error.message} onRetry={refetch} />;
+
+  // 3. 빈 상태
+  if (!data || data.length === 0) return (
+    <EmptyState
+      title="데이터가 없습니다"
+      action={{ label: '새로 만들기', onClick: handleCreate }}
+    />
+  );
+
+  // 4. 성공 상태 (데이터 표시)
+  return (
+    <ul className="space-y-4">
+      {data.map(item => (
+        <li key={item.id} className="card p-4">{item.title}</li>
+      ))}
+    </ul>
+  );
+};
+```
 
 ### 접근성 필수:
 - 모든 `<img>`에 의미 있는 `alt` 텍스트
