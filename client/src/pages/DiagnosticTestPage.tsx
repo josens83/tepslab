@@ -66,8 +66,9 @@ export const DiagnosticTestPage: React.FC = () => {
       const response = await testAPI.getTestById(id!);
       setTest(response.data.data.test);
       setTimeRemaining(response.data.data.test.duration * 60);
-    } catch (err: any) {
-      setError(err.response?.data?.error || '테스트를 불러오는데 실패했습니다.');
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
+      setError(error.response?.data?.error || '테스트를 불러오는데 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -103,8 +104,9 @@ export const DiagnosticTestPage: React.FC = () => {
       });
 
       navigate(`/test/result/${response.data.data.result._id}`);
-    } catch (err: any) {
-      setError(err.response?.data?.error || '테스트 제출에 실패했습니다.');
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
+      setError(error.response?.data?.error || '테스트 제출에 실패했습니다.');
       setSubmitting(false);
     }
   }, [test, answers, startTime, navigate, submitting]);

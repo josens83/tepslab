@@ -111,8 +111,9 @@ export const LessonPlayerPage: React.FC = () => {
       }
 
       setEnrollment(enrollmentData);
-    } catch (err: any) {
-      setError(err.response?.data?.error || '데이터를 불러오는데 실패했습니다.');
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
+      setError(error.response?.data?.error || '데이터를 불러오는데 실패했습니다.');
       console.error('Failed to fetch data:', err);
     } finally {
       setLoading(false);

@@ -134,7 +134,7 @@ export const trackTestCompletion = (testId: string, score: number) => {
 };
 
 // Set user properties
-export const setUserProperties = (userId: string, properties: Record<string, any>) => {
+export const setUserProperties = (userId: string, properties: Record<string, unknown>) => {
   ReactGA.gtag('set', 'user_properties', {
     user_id: userId,
     ...properties,

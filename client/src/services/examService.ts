@@ -164,7 +164,7 @@ export const examService = {
     if (fetchError) throw fetchError;
     if (!attempt) throw new Error('Attempt not found');
 
-    const attemptData = attempt as { answers: UserAnswer[] | null; exam_config: any };
+    const attemptData = attempt as { answers: UserAnswer[] | null; exam_config: Record<string, unknown> | null };
     const answers = attemptData.answers || [];
     const sections = ['listening', 'vocabulary', 'grammar', 'reading'];
 

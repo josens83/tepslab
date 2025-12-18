@@ -43,8 +43,9 @@ export const TestResultPage: React.FC = () => {
       setError(null);
       const response = await testAPI.getResultById(id!);
       setResult(response.data.data.result);
-    } catch (err: any) {
-      setError(err.response?.data?.error || '결과를 불러오는데 실패했습니다.');
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
+      setError(error.response?.data?.error || '결과를 불러오는데 실패했습니다.');
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import type { Course, Enrollment, InsertTables, UpdateTables } from '../types/supabase';
+import type { Course, Enrollment } from '../types/supabase';
 
 export interface CourseFilters {
   targetScore?: number;
@@ -146,7 +146,15 @@ export const courseService = {
     if (fetchError) throw fetchError;
     if (!enrollment) throw new Error('Enrollment not found');
 
-    const progress = ((enrollment as any).progress as any[]) || [];
+    interface LessonProgress {
+      lessonId: string;
+      completed: boolean;
+      completedAt: string | null;
+      lastWatchedAt: string;
+      watchDuration: number;
+    }
+    const enrollmentData = enrollment as { progress: LessonProgress[] | null; course: { lessons_count: number } | null };
+    const progress: LessonProgress[] = enrollmentData.progress || [];
     const existingIndex = progress.findIndex((p) => p.lessonId === lessonId);
 
     const lessonProgress = {
@@ -167,7 +175,7 @@ export const courseService = {
       progress.push(lessonProgress);
     }
 
-    const totalLessons = ((enrollment as any).course as any)?.lessons_count || 1;
+    const totalLessons = enrollmentData.course?.lessons_count || 1;
     const completedLessons = progress.filter((p) => p.completed).length;
     const completionPercentage = Math.round((completedLessons / totalLessons) * 100);
 

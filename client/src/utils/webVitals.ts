@@ -9,8 +9,16 @@ import { trackEvent } from './analytics';
 
 const vitalsUrl = 'https://vitals.vercel-analytics.com/v1/vitals';
 
+interface NetworkInformation {
+  effectiveType?: string;
+}
+
+interface NavigatorWithConnection extends Navigator {
+  connection?: NetworkInformation;
+}
+
 function getConnectionSpeed() {
-  const nav = navigator as any;
+  const nav = navigator as NavigatorWithConnection;
   return nav.connection?.effectiveType || 'unknown';
 }
 

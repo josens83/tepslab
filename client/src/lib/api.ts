@@ -57,7 +57,7 @@ export const authAPI = {
 
 // Course API
 export const courseAPI = {
-  getCourses: (params?: Record<string, any>) =>
+  getCourses: (params?: Record<string, string | number | boolean>) =>
     apiClient.get('/api/courses', { params }),
 
   getFeaturedCourses: () => apiClient.get('/api/courses/featured'),
@@ -68,9 +68,9 @@ export const courseAPI = {
     apiClient.get(`/api/courses/${id}/check-enrollment`),
 
   // Admin only
-  createCourse: (data: any) => apiClient.post('/api/courses', data),
+  createCourse: (data: Record<string, unknown>) => apiClient.post('/api/courses', data),
 
-  updateCourse: (id: string, data: any) =>
+  updateCourse: (id: string, data: Record<string, unknown>) =>
     apiClient.put(`/api/courses/${id}`, data),
 
   deleteCourse: (id: string) => apiClient.delete(`/api/courses/${id}`),

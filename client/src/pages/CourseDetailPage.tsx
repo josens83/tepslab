@@ -67,8 +67,9 @@ export const CourseDetailPage: React.FC = () => {
       setError(null);
       const response = await courseAPI.getCourseById(id!);
       setCourse(response.data.data.course);
-    } catch (err: any) {
-      setError(err.response?.data?.error || '강의를 불러오는데 실패했습니다.');
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
+      setError(error.response?.data?.error || '강의를 불러오는데 실패했습니다.');
       console.error('Failed to fetch course:', err);
     } finally {
       setLoading(false);
@@ -155,8 +156,6 @@ export const CourseDetailPage: React.FC = () => {
     { name: '전체 강의', url: '/courses' },
     { name: course.title, url: `/courses/${course._id}` },
   ];
-
-  const price = course.discountPrice || course.price;
 
   return (
     <MainLayout>

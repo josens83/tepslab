@@ -60,8 +60,9 @@ export const MyCoursesPage: React.FC = () => {
       const params = statusFilter !== 'all' ? { status: statusFilter } : undefined;
       const response = await enrollmentAPI.getMyEnrollments(params);
       setEnrollments(response.data.data.enrollments);
-    } catch (err: any) {
-      setError(err.response?.data?.error || '수강 내역을 불러오는데 실패했습니다.');
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
+      setError(error.response?.data?.error || '수강 내역을 불러오는데 실패했습니다.');
       console.error('Failed to fetch enrollments:', err);
     } finally {
       setLoading(false);

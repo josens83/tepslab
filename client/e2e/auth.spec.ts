@@ -72,7 +72,7 @@ test.describe('Authentication Flow', () => {
     await expect(page.getByText(/대시보드/i)).toBeVisible();
   });
 
-  test('should logout successfully', async ({ page, context }) => {
+  test('should logout successfully', async ({ page }) => {
     // First login
     await page.goto('/login');
     await page.fill('input[type="email"]', 'test@example.com');

@@ -201,6 +201,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
@@ -210,6 +211,7 @@ export function useAuth() {
 }
 
 // Hook for requiring authentication
+// eslint-disable-next-line react-refresh/only-export-components
 export function useRequireAuth(redirectTo = '/login') {
   const auth = useAuth();
 

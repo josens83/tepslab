@@ -70,14 +70,14 @@ export const clearSentryUser = () => {
 };
 
 // Capture exception manually
-export const captureException = (error: Error, context?: Record<string, any>) => {
+export const captureException = (error: Error, context?: Record<string, unknown>) => {
   Sentry.captureException(error, {
     extra: context,
   });
 };
 
 // Add breadcrumb
-export const addBreadcrumb = (message: string, data?: Record<string, any>) => {
+export const addBreadcrumb = (message: string, data?: Record<string, unknown>) => {
   Sentry.addBreadcrumb({
     message,
     data,
