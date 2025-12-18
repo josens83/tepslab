@@ -14,7 +14,7 @@
     "lint-staged": "^16.2.7"
   },
   "scripts": {
-    "prepare": "husky",
+    "prepare": "husky || true",
     "typecheck": "cd client && npm run typecheck",
     "lint": "cd client && npm run lint",
     "build": "cd client && npm run build",
